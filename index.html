@@ -32,4 +32,122 @@
         .info h3 { margin: 0; font-size: 14px; height: 35px; overflow: hidden; color: #fff; }
         .tr-btn { background: #e50914; color: white; border: none; width: 100%; padding: 10px; margin-top: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
 
-        #msg { grid-column: 1/-1; text-align:
+        #msg { grid-column: 1/-1; text-align: center; padding: 100px 0; color: var(--main); font-size: 20px; font-weight: bold; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; }
+        .modal-body { width: 90%; max-width: 800px; margin: 5% auto; position: relative; }
+        .v-cont { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 10px; overflow: hidden; }
+        .v-cont iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .close { position: absolute; right: -30px; top: -30px; font-size: 40px; color: white; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="#" class="logo">FILM ROBOTU</a>
+    <div style="display:flex; gap:10px;">
+        <select id="lang" onchange="runRobot()" style="background:#333; color:white; border:none; padding:5px; border-radius:5px;">
+            <option value="tr-TR">Türkçe</option>
+            <option value="en-US">English</option>
+        </select>
+        <div style="width:20px; height:20px; background:#f5c518; border-radius:50%; cursor:pointer;" onclick="document.documentElement.style.setProperty('--main', '#f5c518')"></div>
+        <div style="width:20px; height:20px; background:#ff4757; border-radius:50%; cursor:pointer;" onclick="document.documentElement.style.setProperty('--main', '#ff4757')"></div>
+    </div>
+</header>
+
+<div class="robot-area">
+    <div class="robot-grid">
+        <div class="f-box"><label>Tür</label><select id="genre"><option value="">Hepsi</option><option value="28">Aksiyon</option><option value="12">Macera</option><option value="35">Komedi</option><option value="27">Korku</option><option value="878">Bilim Kurgu</option></select></div>
+        <div class="f-box"><label>Yıl</label><select id="year"><option value="">Hepsi</option><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2010">2010'lar</option></select></div>
+        <div class="f-box"><label>Puan</label><select id="rating"><option value="0">Hepsi</option><option value="8">8.0+</option><option value="7">7.0+</option><option value="5">5.0+</option></select></div>
+        <div class="f-box"><label>Sıralama</label><select id="sort"><option value="popularity.desc">Popüler</option><option value="vote_average.desc">Puan</option><option value="release_date.desc">Yeni</option></select></div>
+    </div>
+    <button class="btn-run" onclick="runRobot()">ROBOTU ÇALIŞTIR</button>
+</div>
+
+<div class="grid" id="main-grid">
+    <div id="msg">Robot hazırlanıyor, lütfen bekleyin...</div>
+</div>
+
+<div style="text-align:center; padding-bottom: 50px;">
+    <button class="btn-run" style="width:220px;" onclick="nextPage()">DAHA FAZLA YÜKLE</button>
+</div>
+
+<div id="modal" class="modal">
+    <div class="modal-body">
+        <span class="close" onclick="closeV()">&times;</span>
+        <div id="v-box" class="v-cont"></div>
+    </div>
+</div>
+
+<script>
+    const API_KEY = '5157610ea853936f008717feb19e6a9f';
+    let p = 1;
+
+    async function runRobot() {
+        p = 1;
+        document.getElementById('main-grid').innerHTML = '<div id="msg">Veriler taranıyor...</div>';
+        fetchData();
+    }
+
+    async function fetchData() {
+        const g = document.getElementById('genre').value;
+        const y = document.getElementById('year').value;
+        const r = document.getElementById('rating').value;
+        const s = document.getElementById('sort').value;
+        const l = document.getElementById('lang').value;
+        const t = new Date().getTime(); // Önbelleği zorla kıran zaman damgası
+
+        let url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=${l}&page=${p}&sort_by=${s}&vote_average.gte=${r}&cb=${t}`;
+        if(g) url += `&with_genres=${g}`;
+        if(y) url += `&primary_release_year=${y}`;
+
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            if(p === 1) document.getElementById('main-grid').innerHTML = '';
+            
+            data.results.forEach(m => {
+                if(!m.poster_path) return;
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="puan">★ ${m.vote_average.toFixed(1)}</div>
+                    <img src="https://image.tmdb.org/t/p/w500${m.poster_path}" onclick="openV(${m.id})">
+                    <div class="info">
+                        <h3>${m.title}</h3>
+                        <button class="tr-btn" onclick="openV(${m.id})">Fragmanı İzle</button>
+                    </div>`;
+                document.getElementById('main-grid').appendChild(card);
+            });
+        } catch (err) {
+            document.getElementById('main-grid').innerHTML = '<div id="msg">Bağlantı hatası! Lütfen internetinizi kontrol edin.</div>';
+        }
+    }
+
+    function nextPage() { p++; fetchData(); }
+
+    async function openV(id) {
+        const l = document.getElementById('lang').value;
+        const res = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}&language=${l}`);
+        const data = await res.json();
+        const v = data.results.find(x => x.type === 'Trailer') || data.results[0];
+        
+        if(v) {
+            document.getElementById('v-box').innerHTML = `<iframe src="https://www.youtube.com/embed/${v.key}?autoplay=1" allowfullscreen></iframe>`;
+            document.getElementById('modal').style.display = 'block';
+            history.pushState({modal: true}, "");
+        } else { alert("Maalesef fragman bulunamadı."); }
+    }
+
+    function closeV() {
+        document.getElementById('modal').style.display = 'none';
+        document.getElementById('v-box').innerHTML = '';
+    }
+
+    window.onpopstate = () => closeV();
+    window.onload = runRobot; // Sayfa tamamen yüklendiğinde robotu çalıştır
+</script>
+</body>
+</html>
