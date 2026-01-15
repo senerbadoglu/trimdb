@@ -3,49 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Film Rehberim | IMDb Tarzı</title>
+    <title>Film Rehberim | Detaylı Görünüm</title>
     <style>
-        /* Tasarım Ayarları */
-        :root { --imdb-yellow: #f5c518; --bg-black: #000000; --card-bg: #1a1a1a; }
-        body { background-color: var(--bg-black); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; }
+        :root { --imdb-yellow: #f5c518; --bg-black: #0b0b0b; --card-bg: #1a1a1a; }
+        body { background-color: var(--bg-black); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
         
         header { background-color: #121212; padding: 15px 5%; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; }
-        .logo { color: var(--imdb-yellow); font-weight: 900; font-size: 28px; text-decoration: none; border: 2px solid var(--imdb-yellow); padding: 2px 8px; border-radius: 4px; }
+        .logo { color: var(--imdb-yellow); font-weight: 900; font-size: 28px; text-decoration: none; border: 2px solid var(--imdb-yellow); padding: 2px 8px; border-radius: 4px; cursor: pointer; }
         
-        .search-box { flex-grow: 1; margin: 0 20px; position: relative; }
-        #search-input { width: 100%; padding: 10px; border-radius: 20px; border: none; background: #333; color: white; outline: none; }
+        .search-box { flex-grow: 1; margin: 0 20px; }
+        #search-input { width: 100%; padding: 12px; border-radius: 25px; border: none; background: #333; color: white; outline: none; font-size: 16px; }
 
         .container { padding: 20px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; }
         
-        .movie-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; transition: 0.3s; cursor: pointer; position: relative; }
-        .movie-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(245, 197, 24, 0.2); }
+        .movie-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; transition: 0.3s; cursor: pointer; border: 1px solid #222; }
+        .movie-card:hover { transform: translateY(-5px); border-color: var(--imdb-yellow); }
         .movie-card img { width: 100%; height: 270px; object-fit: cover; }
-        
         .movie-info { padding: 12px; }
-        .movie-info h3 { margin: 0; font-size: 14px; height: 40px; overflow: hidden; }
-        .rating { color: var(--imdb-yellow); font-size: 14px; margin-top: 8px; display: flex; align-items: center; }
-        .rating span { margin-left: 5px; color: #aaa; font-size: 12px; }
+        .movie-info h3 { margin: 0; font-size: 14px; height: 40px; }
+        
+        /* Modal (Detay Penceresi) Tasarımı */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; padding-top: 50px; }
+        .modal-content { background: #1a1a1a; margin: auto; padding: 20px; width: 80%; max-width: 800px; border-radius: 15px; position: relative; display: flex; gap: 20px; flex-wrap: wrap; }
+        .close { position: absolute; right: 20px; top: 10px; font-size: 35px; color: white; cursor: pointer; }
+        .modal-left { flex: 1; min-width: 250px; }
+        .modal-left img { width: 100%; border-radius: 10px; }
+        .modal-right { flex: 2; min-width: 300px; }
+        .modal-right h2 { color: var(--imdb-yellow); margin-top: 0; }
+        .modal-right p { line-height: 1.6; color: #ccc; }
+        .tagline { font-style: italic; color: #888; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <header>
-    <a href="#" class="logo">FILM-TR</a>
+    <a href="#" class="logo" onclick="location.reload()">FILM-TR</a>
     <div class="search-box">
-        <input type="text" id="search-input" placeholder="Film ara (Örn: Inception)...">
+        <input type="text" id="search-input" placeholder="Film ara...">
     </div>
 </header>
 
-<div class="container" id="movie-grid">
+<div class="container" id="movie-grid"></div>
+
+<div id="movieModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div id="modal-body" style="display: flex; gap: 20px; flex-wrap: wrap;">
+            </div>
     </div>
+</div>
 
 <script>
-    const API_KEY = '5157610ea853936f008717feb19e6a9f'; // Senin anahtarın
+    const API_KEY = '5157610ea853936f008717feb19e6a9f';
     const IMG_PATH = 'https://image.tmdb.org/t/p/w500';
     const movieGrid = document.getElementById('movie-grid');
     const searchInput = document.getElementById('search-input');
+    const modal = document.getElementById('movieModal');
+    const modalBody = document.getElementById('modal-body');
 
-    // İlk açılışta popüler filmleri getir
     getMovies(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=tr-TR`);
 
     async function getMovies(url) {
@@ -57,31 +72,48 @@
     function showMovies(movies) {
         movieGrid.innerHTML = '';
         movies.forEach((movie) => {
-            const { title, poster_path, vote_average, release_date } = movie;
+            const { title, poster_path, vote_average, id } = movie;
             const movieEl = document.createElement('div');
             movieEl.classList.add('movie-card');
+            movieEl.onclick = () => getMovieDetails(id);
             movieEl.innerHTML = `
-                <img src="${poster_path ? IMG_PATH + poster_path : 'https://via.placeholder.com/500x750?text=Resim+Yok'}" alt="${title}">
+                <img src="${poster_path ? IMG_PATH + poster_path : 'https://via.placeholder.com/500x750'}" alt="${title}">
                 <div class="movie-info">
                     <h3>${title}</h3>
-                    <div class="rating">
-                        ★ ${vote_average.toFixed(1)} <span>| ${release_date ? release_date.split('-')[0] : '-'}</span>
-                    </div>
+                    <div style="color:#f5c518">★ ${vote_average.toFixed(1)}</div>
                 </div>
             `;
             movieGrid.appendChild(movieEl);
         });
     }
 
-    // Arama yapıldığında çalışır
+    async function getMovieDetails(id) {
+        const res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=tr-TR`);
+        const movie = await res.json();
+        
+        modalBody.innerHTML = `
+            <div class="modal-left">
+                <img src="${movie.poster_path ? IMG_PATH + movie.poster_path : ''}" alt="">
+            </div>
+            <div class="modal-right">
+                <h2>${movie.title}</h2>
+                <p class="tagline">${movie.tagline || ''}</p>
+                <p><strong>Özet:</strong> ${movie.overview}</p>
+                <p><strong>Yayın Tarihi:</strong> ${movie.release_date}</p>
+                <p><strong>Puan:</strong> ★ ${movie.vote_average.toFixed(1)}</p>
+                <p><strong>Türler:</strong> ${movie.genres.map(g => g.name).join(', ')}</p>
+            </div>
+        `;
+        modal.style.display = "block";
+    }
+
+    function closeModal() { modal.style.display = "none"; }
+    window.onclick = (event) => { if (event.target == modal) closeModal(); }
+
     searchInput.addEventListener('keypress', (e) => {
         if(e.key === 'Enter') {
             const searchTerm = searchInput.value;
-            if(searchTerm && searchTerm !== '') {
-                getMovies(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${searchTerm}&language=tr-TR`);
-            } else {
-                window.location.reload();
-            }
+            getMovies(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${searchTerm}&language=tr-TR`);
         }
     });
 </script>
