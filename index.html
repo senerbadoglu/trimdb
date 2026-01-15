@@ -3,56 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Film Rehberim | Geri Tuşu Korumalı</title>
+    <title>Film Rehberim | Ultra Stabil Versiyon</title>
     <style>
         :root { --main-color: #f5c518; --bg-black: #0b0b0b; --card-bg: #1a1a1a; }
-        body { background-color: var(--bg-black); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; min-height: 100vh; overflow-x: hidden; }
+        body { background-color: var(--bg-black); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; min-height: 100vh; }
         
-        header { background-color: #121212; padding: 15px 5%; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; }
+        /* Header */
+        header { background-color: #121212; padding: 15px 5%; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; flex-wrap: wrap; gap: 10px; }
         .logo { color: var(--main-color); font-weight: 900; font-size: 28px; text-decoration: none; border: 2px solid var(--main-color); padding: 2px 8px; border-radius: 4px; cursor: pointer; }
         
+        .header-controls { display: flex; gap: 10px; align-items: center; }
+        .color-dot { width: 15px; height: 15px; border-radius: 50%; cursor: pointer; border: 1px solid #fff; }
+        #search-input { padding: 8px 15px; border-radius: 20px; border: none; background: #333; color: white; outline: none; width: 150px; }
+
+        /* Navigasyon */
         .nav-container { padding: 15px 5%; background: #000; border-bottom: 1px solid #222; }
         .filter-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; align-items: center; }
-        .filter-label { font-size: 12px; color: #888; text-transform: uppercase; margin-right: 5px; font-weight: bold; }
+        .filter-label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; }
 
         .btn { background: #222; color: white; border: 1px solid #444; padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 13px; transition: 0.2s; }
         .btn:hover, .btn.active { background: var(--main-color); color: black !important; border-color: var(--main-color); font-weight: bold; }
 
-        .container { padding: 20px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
-        .movie-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid #222; transition: 0.3s; display: flex; flex-direction: column; }
-        .movie-card:hover { transform: translateY(-5px); border-color: var(--main-color); box-shadow: 0 5px 15px rgba(245, 197, 24, 0.3); }
-        .movie-card img { width: 100%; height: 300px; object-fit: cover; cursor: pointer; }
+        /* Grid Sistemi */
+        .container { padding: 20px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; min-height: 400px; }
+        .movie-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; border: 1px solid #222; transition: 0.3s; position: relative; }
+        .movie-card:hover { transform: scale(1.03); border-color: var(--main-color); }
+        .movie-card img { width: 100%; height: 270px; object-fit: cover; cursor: pointer; display: block; }
         
-        .movie-info { padding: 15px; flex-grow: 1; }
-        .movie-info h3 { margin: 0 0 8px 0; font-size: 15px; height: 40px; overflow: hidden; }
+        .movie-info { padding: 12px; }
+        .movie-info h3 { margin: 0 0 5px 0; font-size: 14px; height: 36px; overflow: hidden; color: #eee; }
         
-        .trailer-btn { background: #e50914; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; }
-
-        /* Modal / Pop-up */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); }
-        .modal-content { background: #111; margin: 2% auto; padding: 20px; width: 90%; max-width: 850px; border-radius: 15px; position: relative; border: 1px solid #333; }
-        .close { position: absolute; right: 20px; top: 10px; font-size: 35px; color: white; cursor: pointer; z-index: 10; }
-        .video-container { position: relative; width: 100%; padding-bottom: 56.25%; border-radius: 10px; overflow: hidden; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-
-        #search-input { padding: 10px 15px; border-radius: 20px; border: none; background: #333; color: white; width: 180px; }
-    </style>
-</head>
-<body>
-
-<header>
-    <a href="#" class="logo" onclick="location.reload()">FILM-TR</a>
-    <div style="display: flex; gap: 10px; align-items: center;">
-        <select id="lang" onchange="changeLang()" style="background:#333; color:white; border:none; padding:8px; border-radius:5px;">
-            <option value="tr-TR">TR</option>
-            <option value="en-US">EN</option>
-        </select>
-        <input type="text" id="search-input" placeholder="Film ara...">
-    </div>
-</header>
-
-<div class="nav-container">
-    <div class="filter-group">
-        <span class="filter-label">KEŞFET:</span>
-        <button class="btn active" id="btn-pop" onclick="resetAndLoad('popular', null, this, true)">Sürpriz!</button>
-        <button class="btn" onclick="
+        .trailer-btn { background: #e50914; color: white; border: none; padding: 8px; border-radius: 4px; cursor
