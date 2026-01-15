@@ -1,1 +1,183 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRimdb | Film Robotu v7</title>
+    <style>
+        :root { --sari: #f5c518; --siyah: #000000; --gri: #121212; --kutu: #1f1f1f; }
+        body { background-color: var(--siyah); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; }
+        
+        /* HEADER */
+        header { background: var(--gri); padding: 15px 5%; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--sari); }
+        .logo { font-size: 24px; font-weight: 900; background: var(--sari); color: black; padding: 5px 15px; border-radius: 5px; text-decoration: none; }
+        .surum { color: #555; font-size: 12px; font-weight: bold; }
 
+        /* FİLTRE ALANI */
+        .filtre-alani { background: var(--gri); padding: 20px 5%; border-bottom: 1px solid #333; }
+        .filtreler { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+        
+        .secim-kutusu { background: var(--kutu); padding: 10px; border-radius: 8px; border: 1px solid #333; }
+        .secim-kutusu label { display: block; color: var(--sari); font-size: 11px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+        .secim-kutusu select { width: 100%; background: transparent; color: white; border: none; outline: none; font-size: 14px; cursor: pointer; }
+        .secim-kutusu select option { background: #000; }
+
+        .btn-bul { background: var(--sari); color: black; width: 100%; border: none; padding: 15px; border-radius: 8px; font-weight: 900; font-size: 16px; margin-top: 20px; cursor: pointer; transition: 0.2s; }
+        .btn-bul:hover { background: white; }
+
+        /* FİLM LİSTESİ */
+        .film-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; padding: 30px 5%; }
+        .film { background: var(--kutu); border-radius: 10px; overflow: hidden; border: 1px solid #222; position: relative; transition: transform 0.2s; }
+        .film:hover { transform: translateY(-5px); border-color: var(--sari); }
+        
+        .film img { width: 100%; height: 240px; object-fit: cover; }
+        .puan-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: var(--sari); padding: 4px 8px; border-radius: 5px; font-weight: bold; font-size: 12px; border: 1px solid var(--sari); }
+        
+        .bilgi { padding: 12px; text-align: center; }
+        .bilgi h3 { font-size: 14px; margin: 0 0 10px 0; height: 35px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        
+        .fragman-btn { background: #e50914; color: white; border: none; width: 100%; padding: 8px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .fragman-btn:hover { background: #ff0f1f; }
+
+        /* MODAL (VİDEO) */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; }
+        .modal-icerik { width: 90%; max-width: 800px; margin: 10% auto; position: relative; }
+        .kapat { position: absolute; top: -40px; right: 0; color: white; font-size: 40px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="#" class="logo">TRimdb</a>
+    <span class="surum">YENİ VERSİYON v7.0</span>
+</header>
+
+<div class="filtre-alani">
+    <div class="filtreler">
+        <div class="secim-kutusu">
+            <label>TÜR SEÇİNİZ</label>
+            <select id="tur">
+                <option value="">Tümü</option>
+                <option value="28">Aksiyon</option><option value="12">Macera</option><option value="16">Animasyon</option><option value="35">Komedi</option><option value="80">Suç</option><option value="18">Dram</option><option value="27">Korku</option><option value="878">Bilim Kurgu</option>
+            </select>
+        </div>
+
+        <div class="secim-kutusu">
+            <label>YIL SEÇİNİZ</label>
+            <select id="yil">
+                <option value="">Tümü</option>
+                <option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option><option value="2015">2015+</option>
+            </select>
+        </div>
+
+        <div class="secim-kutusu">
+            <label>TRimdb PUANI</label>
+            <select id="puan">
+                <option value="0">Tüm Puanlar</option>
+                <option value="10">10 Puan</option>
+                <option value="9">9+ Puan</option>
+                <option value="8">8+ Puan</option>
+                <option value="7">7+ Puan</option>
+                <option value="6">6+ Puan</option>
+                <option value="5">5+ Puan</option>
+                <option value="4">4+ Puan</option>
+                <option value="3">3+ Puan</option>
+                <option value="2">2+ Puan</option>
+                <option value="1">1+ Puan</option>
+            </select>
+        </div>
+
+        <div class="secim-kutusu">
+            <label>SIRALAMA</label>
+            <select id="sira">
+                <option value="popularity.desc">Popülerlik</option>
+                <option value="vote_average.desc">En Yüksek Puan</option>
+                <option value="primary_release_date.desc">En Yeni Tarih</option>
+            </select>
+        </div>
+    </div>
+    <button class="btn-bul" onclick="filmleriGetir()">FİLMLERİ LİSTELE</button>
+</div>
+
+<div class="film-grid" id="liste"></div>
+
+<div id="videoModal" class="modal">
+    <div class="modal-icerik">
+        <span class="kapat" onclick="modalKapat()">&times;</span>
+        <div id="player"></div>
+    </div>
+</div>
+
+<script>
+    const API_KEY = '5157610ea853936f008717feb19e6a9f';
+
+    async function filmleriGetir() {
+        const liste = document.getElementById('liste');
+        liste.innerHTML = '<p style="color:var(--sari); text-align:center; grid-column:1/-1;">Yükleniyor...</p>';
+        
+        const tur = document.getElementById('tur').value;
+        const yil = document.getElementById('yil').value;
+        const puan = document.getElementById('puan').value;
+        const sira = document.getElementById('sira').value;
+        
+        // Cache sorununu aşmak için "v" parametresi ekliyoruz
+        let url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=tr-TR&sort_by=${sira}&vote_average.gte=${puan}&v=${Date.now()}`;
+        
+        if(tur) url += `&with_genres=${tur}`;
+        if(yil) url += `&primary_release_year=${yil}`;
+
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            
+            liste.innerHTML = '';
+            
+            if (data.results.length === 0) {
+                liste.innerHTML = '<p style="color:white; text-align:center; grid-column:1/-1;">Aradığınız kriterde film bulunamadı.</p>';
+                return;
+            }
+
+            data.results.forEach(film => {
+                if(!film.poster_path) return;
+                
+                const kart = document.createElement('div');
+                kart.className = 'film';
+                kart.innerHTML = `
+                    <div class="puan-badge">★ ${film.vote_average.toFixed(1)}</div>
+                    <img src="https://image.tmdb.org/t/p/w500${film.poster_path}" alt="${film.title}">
+                    <div class="bilgi">
+                        <h3>${film.title}</h3>
+                        <button class="fragman-btn" onclick="fragmanIzle(${film.id})">FRAGMAN İZLE</button>
+                    </div>
+                `;
+                liste.appendChild(kart);
+            });
+        } catch (error) {
+            liste.innerHTML = '<p style="color:red; text-align:center;">Bir hata oluştu.</p>';
+        }
+    }
+
+    async function fragmanIzle(id) {
+        const res = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}`);
+        const data = await res.json();
+        const video = data.results.find(v => v.type === 'Trailer') || data.results[0];
+        
+        if(video) {
+            document.getElementById('player').innerHTML = `<iframe width="100%" height="450" src="https://www.youtube.com/embed/${video.key}?autoplay=1" frameborder="0" allowfullscreen></iframe>`;
+            document.getElementById('videoModal').style.display = 'block';
+        } else {
+            alert("Bu filmin fragmanı bulunamadı.");
+        }
+    }
+
+    function modalKapat() {
+        document.getElementById('videoModal').style.display = 'none';
+        document.getElementById('player').innerHTML = '';
+    }
+    
+    // Sayfa açılışında otomatik yükle
+    window.onload = filmleriGetir;
+</script>
+
+</body>
+</html>
