@@ -6,26 +6,22 @@
     <title>TRimdb | Profesyonel Film Rehberi</title>
     <style>
         :root { --main: #f5c518; --bg: #121212; --card: #1c1c1c; --input-bg: #2a2a2a; }
-        body { background: #000; color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
+        body { background: #000; color: white; font-family: 'Inter', sans-serif; margin: 0; }
         header { background: #121212; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 1000; }
-        .logo { color: var(--main); font-weight: 900; font-size: 26px; text-decoration: none; border: 2.5px solid var(--main); padding: 4px 12px; border-radius: 6px; letter-spacing: -1px; }
-        .header-right { display: flex; align-items: center; gap: 20px; }
-        .colors { display: flex; gap: 10px; }
-        .dot { width: 18px; height: 18px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; }
+        .logo { color: var(--main); font-weight: 900; font-size: 26px; text-decoration: none; border: 2.5px solid var(--main); padding: 4px 12px; border-radius: 6px; }
         
         .robot-panel { background: var(--bg); padding: 25px 5%; border-bottom: 1px solid #333; }
         .robot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
         .filter-item { background: var(--input-bg); padding: 12px; border-radius: 10px; border: 1px solid #333; }
-        .filter-item label { display: block; font-size: 11px; color: #aaa; margin-bottom: 6px; text-transform: uppercase; }
+        .filter-item label { display: block; font-size: 11px; color: #aaa; margin-bottom: 6px; text-transform: uppercase; font-weight: bold; }
         .filter-item select { width: 100%; background: transparent; color: white; border: none; outline: none; font-size: 15px; cursor: pointer; }
-        .filter-item select option { background: #2a2a2a; color: white; }
-
+        
         .run-btn { background: var(--main); color: black; border: none; padding: 15px; border-radius: 10px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 20px; text-transform: uppercase; transition: 0.3s; }
-        .run-btn:hover { opacity: 0.8; }
+        .run-btn:hover { background: #fff; }
 
         .movie-grid { padding: 30px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; }
         .movie-card { background: var(--card); border-radius: 15px; overflow: hidden; position: relative; transition: 0.4s; border: 1px solid #222; }
-        .movie-card img { width: 100%; height: 270px; object-fit: cover; cursor: pointer; }
+        .movie-card img { width: 100%; height: 270px; object-fit: cover; }
         .rating-badge { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.85); color: var(--main); padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; }
         .movie-info { padding: 15px; }
         .movie-info h3 { margin: 0; font-size: 14px; height: 40px; overflow: hidden; }
@@ -42,17 +38,10 @@
 
 <header>
     <a href="#" class="logo">TRimdb</a>
-    <div class="header-right">
-        <div class="colors">
-            <div class="dot" style="background: #f5c518;" onclick="changeTheme('#f5c518')"></div>
-            <div class="dot" style="background: #ff4757;" onclick="changeTheme('#ff4757')"></div>
-            <div class="dot" style="background: #1e90ff;" onclick="changeTheme('#1e90ff')"></div>
-        </div>
-        <select id="ui-lang" onchange="initApp(false)" style="background:#333; color:white; border:none; padding:5px; border-radius:5px;">
-            <option value="tr-TR">TR</option>
-            <option value="en-US">EN</option>
-        </select>
-    </div>
+    <select id="ui-lang" onchange="initApp(false)" style="background:#333; color:white; border:none; padding:5px; border-radius:5px;">
+        <option value="tr-TR">Türkçe</option>
+        <option value="en-US">English</option>
+    </select>
 </header>
 
 <div class="robot-panel">
@@ -60,15 +49,15 @@
         <div class="filter-item">
             <label>Türler</label>
             <select id="genre-id">
-                <option value="">Tüm Türler</option>
+                <option value="">Hepsi</option>
                 <option value="28">Aksiyon</option><option value="12">Macera</option><option value="16">Animasyon</option><option value="35">Komedi</option><option value="80">Suç</option><option value="18">Dram</option><option value="27">Korku</option><option value="878">Bilim Kurgu</option>
             </select>
         </div>
         <div class="filter-item">
             <label>Yıllar</label>
             <select id="year-val">
-                <option value="">Tüm Yıllar</option>
-                <option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option><option value="2019">2019</option><option value="2018">2018</option><option value="2017">2017</option><option value="2016">2016</option><option value="2015">2015</option><option value="2014">2014</option><option value="2013">2013</option><option value="2012">2012</option><option value="2011">2011</option><option value="2010">2010</option><option value="2009">2009</option><option value="2008">2008</option><option value="2007">2007</option><option value="2006">2006</option><option value="2005">2005</option><option value="2004">2004</option><option value="2003">2003</option><option value="2002">2002</option><option value="2001">2001</option><option value="2000-old">2000 Öncesi</option>
+                <option value="">Hepsi</option>
+                <option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option><option value="2019">2019</option><option value="2018">2018</option><option value="2017">2017</option><option value="2016">2016</option><option value="2015">2015</option><option value="2014">2014</option><option value="2013">2013</option><option value="2012">2012</option><option value="2011">2011</option><option value="2010">2010</option><option value="2000-old">2000 Öncesi</option>
             </select>
         </div>
         <div class="filter-item">
@@ -76,15 +65,15 @@
             <select id="vote-val">
                 <option value="0">TÜM PUANLAR</option>
                 <option value="10">10 Puan</option>
-                <option value="9">9+ Puan</option>
-                <option value="8">8+ Puan</option>
-                <option value="7">7+ Puan</option>
-                <option value="6">6+ Puan</option>
-                <option value="5">5+ Puan</option>
-                <option value="4">4+ Puan</option>
-                <option value="3">3+ Puan</option>
-                <option value="2">2+ Puan</option>
-                <option value="1">1+ Puan</option>
+                <option value="9">9+ Üzeri</option>
+                <option value="8">8+ Üzeri</option>
+                <option value="7">7+ Üzeri</option>
+                <option value="6">6+ Üzeri</option>
+                <option value="5">5+ Üzeri</option>
+                <option value="4">4+ Üzeri</option>
+                <option value="3">3+ Üzeri</option>
+                <option value="2">2+ Üzeri</option>
+                <option value="1">1+ Üzeri</option>
             </select>
         </div>
         <div class="filter-item">
@@ -102,7 +91,7 @@
 <div class="movie-grid" id="grid"></div>
 
 <div style="text-align:center; padding-bottom: 60px;">
-    <button class="run-btn" style="width: 280px;" onclick="loadMore()">Daha Fazla Film Getir</button>
+    <button class="run-btn" style="width: 250px;" onclick="loadMore()">Daha Fazla Film</button>
 </div>
 
 <div id="v-modal" class="modal">
@@ -116,64 +105,61 @@
     const API_KEY = '5157610ea853936f008717feb19e6a9f';
     let currentPage = 1;
 
-    function changeTheme(c) { document.documentElement.style.setProperty('--main', c); }
-
     async function initApp(isRandom = true) {
-        if(isRandom) {
-            currentPage = Math.floor(Math.random() * 20) + 1; 
-        } else {
-            currentPage = 1;
-        }
-        document.getElementById('grid').innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--main);">Veriler Getiriliyor...</div>';
+        if(isRandom) { currentPage = Math.floor(Math.random() * 20) + 1; } 
+        else { currentPage = 1; }
+        document.getElementById('grid').innerHTML = '<p style="text-align:center; width:100%; color:var(--main);">Yükleniyor...</p>';
         await fetchMovies();
     }
 
     async function fetchMovies() {
         const genre = document.getElementById('genre-id').value;
-        const yearSelect = document.getElementById('year-val').value;
+        const year = document.getElementById('year-val').value;
         const vote = document.getElementById('vote-val').value;
         const sort = document.getElementById('sort-val').value;
         const lang = document.getElementById('ui-lang').value;
-        const t = new Date().getTime();
-
-        let url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=${lang}&page=${currentPage}&sort_by=${sort}&vote_average.gte=${vote}&cb=${t}`;
+        
+        // Cache engelleme için rastgele sayı ekliyoruz
+        let url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=${lang}&page=${currentPage}&sort_by=${sort}&vote_average.gte=${vote}&_v=${Math.random()}`;
         
         if(genre) url += `&with_genres=${genre}`;
-        if(yearSelect === "2000-old") { url += `&release_date.lte=1999-12-31`; } 
-        else if(yearSelect) { url += `&primary_release_year=${yearSelect}`; }
+        if(year === "2000-old") url += `&release_date.lte=1999-12-31`;
+        else if(year) url += `&primary_release_year=${year}`;
 
-        try {
-            const res = await fetch(url);
-            const data = await res.json();
-            if(currentPage === 1 || document.getElementById('grid').innerText.includes('Getiriliyor')) document.getElementById('grid').innerHTML = '';
-            
-            data.results.forEach(m => {
-                if(!m.poster_path) return;
-                const card = document.createElement('div');
-                card.className = 'movie-card';
-                card.innerHTML = `<div class="rating-badge">★ ${m.vote_average.toFixed(1)}</div><img src="https://image.tmdb.org/t/p/w500${m.poster_path}" onclick="openVideo(${m.id})"><div class="movie-info"><h3>${m.title}</h3><button class="play-btn" onclick="openVideo(${m.id})">Fragman İzle</button></div>`;
-                document.getElementById('grid').appendChild(card);
-            });
-        } catch (e) { console.error("Hata!"); }
+        const res = await fetch(url);
+        const data = await res.json();
+        
+        if(currentPage === 1) document.getElementById('grid').innerHTML = '';
+        
+        data.results.forEach(m => {
+            if(!m.poster_path) return;
+            const card = document.createElement('div');
+            card.className = 'movie-card';
+            card.innerHTML = `
+                <div class="rating-badge">★ ${m.vote_average.toFixed(1)}</div>
+                <img src="https://image.tmdb.org/t/p/w500${m.poster_path}">
+                <div class="movie-info">
+                    <h3>${m.title}</h3>
+                    <button class="play-btn" onclick="openVideo(${m.id})">Fragman İzle</button>
+                </div>`;
+            document.getElementById('grid').appendChild(card);
+        });
     }
 
     function loadMore() { currentPage++; fetchMovies(); }
 
     async function openVideo(id) {
-        const lang = document.getElementById('ui-lang').value;
-        const res = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}&language=${lang}`);
+        const res = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}`);
         const data = await res.json();
-        let video = data.results.find(v => v.type === 'Trailer') || data.results[0];
+        const video = data.results.find(v => v.type === 'Trailer') || data.results[0];
         if(video) {
             document.getElementById('player').innerHTML = `<iframe src="https://www.youtube.com/embed/${video.key}?autoplay=1" allowfullscreen></iframe>`;
             document.getElementById('v-modal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
-            history.pushState({modal: true}, "");
         } else { alert("Fragman bulunamadı."); }
     }
 
-    function closeVideo() { document.getElementById('v-modal').style.display = 'none'; document.getElementById('player').innerHTML = ''; document.body.style.overflow = 'auto'; }
-    window.onpopstate = () => closeVideo();
+    function closeVideo() { document.getElementById('v-modal').style.display = 'none'; document.getElementById('player').innerHTML = ''; }
+    
     window.onload = () => initApp(true);
 </script>
 </body>
