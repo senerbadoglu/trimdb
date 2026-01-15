@@ -3,167 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Film Rehberim | Bağlantı Onarıldı</title>
+    <title>Film Rehberim | Kesin Çözüm</title>
     <style>
         :root { --main-color: #f5c518; --bg-black: #0b0b0b; --card-bg: #1a1a1a; }
-        body { background-color: var(--bg-black); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; min-height: 100vh; }
-        header { background-color: #121212; padding: 15px 5%; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; }
-        .logo { color: var(--main-color); font-weight: 900; font-size: 28px; text-decoration: none; border: 2px solid var(--main-color); padding: 2px 8px; border-radius: 4px; cursor: pointer; }
-        .nav-container { padding: 15px 5%; background: #000; border-bottom: 1px solid #222; display: flex; gap: 10px; flex-wrap: wrap; }
-        .btn { background: #222; color: white; border: 1px solid #444; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 13px; }
-        .btn.active { background: var(--main-color); color: black !important; font-weight: bold; border-color: var(--main-color); }
-        .container { padding: 20px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
-        .movie-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid #222; transition: 0.3s; }
-        .movie-card:hover { transform: translateY(-5px); border-color: var(--main-color); }
-        .movie-card img { width: 100%; height: 300px; object-fit: cover; cursor: pointer; }
-        .movie-info { padding: 15px; }
-        .movie-info h3 { margin: 0 0 10px 0; font-size: 15px; height: 40px; overflow: hidden; }
-        .trailer-btn { background: #e50914; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
-        #status-msg { text-align: center; width: 100%; grid-column: 1/-1; padding: 100px 20px; font-size: 20px; color: var(--main-color); }
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); }
-        .modal-content { background: #111; margin: 2% auto; padding: 20px; width: 90%; max-width: 850px; border-radius: 15px; position: relative; }
-        .close { position: absolute; right: 20px; top: 10px; font-size: 35px; color: white; cursor: pointer; }
-        .video-container { position: relative; width: 100%; padding-bottom: 56.25%; border-radius: 10px; overflow: hidden; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        body { background-color: var(--bg-black); color: white; font-family: sans-serif; margin: 0; }
+        header { background: #121212; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100; }
+        .logo { color: var(--main-color); font-weight: bold; font-size: 24px; text-decoration: none; border: 2px solid var(--main-color); padding: 5px 10px; border-radius: 5px; }
+        .nav { padding: 15px 5%; background: #000; display: flex; gap: 10px; overflow-x: auto; }
+        .btn { background: #222; color: white; border: 1px solid #444; padding: 8px 15px; border-radius: 20px; cursor: pointer; white-space: nowrap; }
+        .btn.active { background: var(--main-color); color: black; font-weight: bold; }
+        .grid { padding: 20px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .card { background: var(--card-bg); border-radius: 10px; overflow: hidden; border: 1px solid #222; transition: 0.3s; position: relative; }
+        .card:hover { transform: scale(1.03); border-color: var(--main-color); }
+        .card img { width: 100%; height: 270px; object-fit: cover; cursor: pointer; }
+        .info { padding: 12px; }
+        .info h3 { margin: 0; font-size: 14px; height: 35px; overflow: hidden; }
+        .trailer-btn { background: #e50914; color: white; border: none; width: 100%; padding: 8px; margin-top: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        #msg { text-align: center; width: 100%; padding: 50px; color: var(--main-color); font-size: 18px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; }
+        .modal-content { width: 90%; max-width: 800px; margin: 5% auto; position: relative; }
+        .v-container { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
+        .v-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
     </style>
 </head>
 <body>
 
 <header>
     <a href="#" class="logo" onclick="location.reload()">FILM-TR</a>
-    <input type="text" id="search-input" placeholder="Film ara..." style="padding: 10px; border-radius: 20px; border:none; background:#333; color:white; width: 200px;">
+    <input type="text" id="search" placeholder="Film ara..." style="padding:8px 15px; border-radius:20px; border:none; background:#333; color:white;">
 </header>
 
-<div class="nav-container">
-    <button class="btn active" id="btn-pop" onclick="loadContent('popular', this)">Popüler</button>
-    <button class="btn" onclick="loadContent('now_playing', this)">Vizyondakiler</button>
-    <button class="btn" onclick="loadContent('top_rated', this)">En İyiler</button>
+<div class="nav">
+    <button class="btn active" id="pop-btn" onclick="start('popular', this)">Sürpriz Filmler!</button>
+    <button class="btn" onclick="start('now_playing', this)">Yeni Çıkanlar</button>
+    <button class="btn" onclick="start('top_rated', this)">En İyiler</button>
 </div>
 
-<div class="container" id="movie-grid">
-    <div id="status-msg">Filmler yükleniyor, lütfen bekleyin...</div>
+<div class="grid" id="movie-grid">
+    <div id="msg">Yükleniyor...</div>
 </div>
 
-<div id="movieModal" class="modal">
+<div id="modal" class="modal" onclick="closeM()">
     <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <div id="modal-body"></div>
+        <div id="video-box" class="v-container"></div>
     </div>
 </div>
 
 <script>
-    const API_KEY = '5157610ea853936f008717feb19e6a9f';
+    const KEY = '5157610ea853936f008717feb19e6a9f';
     const grid = document.getElementById('movie-grid');
 
-    async function fetchMovies(type = 'popular') {
-        grid.innerHTML = '<div id="status-msg">Veriler çekiliyor...</div>';
-        
-        // Rastgele sayfa seçerek "Sürpriz" etkisini koruyoruz
-        const randomPage = Math.floor(Math.random() * 10) + 1;
-        const url = `https://api.themoviedb.org/3/movie/${type}?api_key=${API_KEY}&language=tr-TR&page=${randomPage}`;
+    // Sunucu yanıt vermezse devreye girecek yedek liste
+    const backupMovies = [
+        {id: 550, title: "Dövüş Kulübü", poster_path: "/pB8BM79vUQKov9Zp7uYI6N9SSTT.jpg", vote_average: 8.4},
+        {id: 157336, title: "Yıldızlararası", poster_path: "/gEU2QniE6E77NI6vCU67oYvbpvP.jpg", vote_average: 8.4},
+        {id: 27205, title: "Başlangıç", poster_path: "/edvWebvCECcj7v6v9ihOnijAI0Z.jpg", vote_average: 8.4},
+        {id: 155, title: "Kara Şövalye", poster_path: "/qJ2tW6WMUDp9QmSbmrG5C26Lpfs.jpg", vote_average: 8.5}
+    ];
+
+    async function getMovies(type) {
+        grid.innerHTML = '<div id="msg">Bağlantı kuruluyor...</div>';
+        const page = Math.floor(Math.random() * 20) + 1;
+        const url = `https://api.themoviedb.org/3/movie/${type}?api_key=${KEY}&language=tr-TR&page=${page}`;
 
         try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error('API hatası');
-            const data = await response.json();
-            
-            if (data.results && data.results.length > 0) {
-                grid.innerHTML = ''; // Yükleniyor yazısını kaldır
-                data.results.forEach(movie => {
-                    if (!movie.poster_path) return;
-                    const card = document.createElement('div');
-                    card.className = 'movie-card';
-                    card.innerHTML = `
-                        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" onclick="openTrailer(${movie.id})">
-                        <div class="movie-info">
-                            <h3>${movie.title}</h3>
-                            <div style="color:var(--main-color); margin-bottom:10px;">★ ${movie.vote_average.toFixed(1)}</div>
-                            <button class="trailer-btn" onclick="openTrailer(${movie.id})">Fragman</button>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-            } else {
-                grid.innerHTML = '<div id="status-msg">Gösterilecek film bulunamadı.</div>';
-            }
-        } catch (error) {
-            grid.innerHTML = `
-                <div id="status-msg">
-                    Bağlantı sorunu oluştu.<br><br>
-                    <button class="btn active" onclick="location.reload()">Sayfayı Yenile</button>
-                </div>`;
-        }
-    }
-
-    async function openTrailer(id) {
-        try {
-            const res = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}&language=tr-TR`);
+            const res = await fetch(url, { method: 'GET' });
+            if (!res.ok) throw new Error();
             const data = await res.json();
-            let trailer = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
-            
-            if(!trailer) {
-                const resEn = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}&language=en-US`);
-                const dataEn = await resEn.json();
-                trailer = dataEn.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
-            }
-
-            if(trailer) {
-                document.getElementById('modal-body').innerHTML = `
-                    <div class="video-container">
-                        <iframe src="https://www.youtube.com/embed/${trailer.key}?autoplay=1" allowfullscreen></iframe>
-                    </div>`;
-                document.getElementById('movieModal').style.display = "block";
-                history.pushState({modal: true}, "");
-            } else {
-                alert("Üzgünüz, bu filmin fragmanı henüz sistemimizde yok.");
-            }
-        } catch (e) { alert("Bir hata oluştu."); }
-    }
-
-    function closeModal() {
-        document.getElementById('movieModal').style.display = "none";
-        document.getElementById('modal-body').innerHTML = "";
-    }
-
-    window.onpopstate = () => closeModal();
-
-    function loadContent(type, btn) {
-        document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        fetchMovies(type);
-    }
-
-    // Arama fonksiyonu
-    document.getElementById('search-input').addEventListener('keypress', async (e) => {
-        if (e.key === 'Enter') {
-            const query = e.target.value;
-            const url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=tr-TR`;
-            const res = await fetch(url);
-            const data = await res.json();
-            grid.innerHTML = '';
-            showMoviesManually(data.results);
-        }
-    });
-
-    function showMoviesManually(list) {
-        list.forEach(movie => {
-            if (!movie.poster_path) return;
-            const card = document.createElement('div');
-            card.className = 'movie-card';
-            card.innerHTML = `
-                <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" onclick="openTrailer(${movie.id})">
-                <div class="movie-info">
-                    <h3>${movie.title}</h3>
-                    <div style="color:var(--main-color); margin-bottom:10px;">★ ${movie.vote_average.toFixed(1)}</div>
-                    <button class="trailer-btn" onclick="openTrailer(${movie.id})">Fragman</button>
-                </div>
-            `;
-            grid.appendChild(card);
-        });
-    }
-
-    // İlk yükleme
-    window.onload = () => fetchMovies('popular');
-</script>
-</body>
-</html>
+            render(data.results);
+        } catch (e) {
+            console.log("Yedek liste devreye girdi.");
+            render(backupMovies);
+            grid.insertAdjacentHTML('afterbegin', '<div style="grid-column:1/-1; color:red; text-align:center
