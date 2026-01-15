@@ -62,22 +62,69 @@
     <div class="robot-grid">
         <div class="filter-item">
             <label>Türler</label>
-            <select id="genre-id"><option value="">Tüm Türler</option><option value="28">Aksiyon</option><option value="12">Macera</option><option value="16">Animasyon</option><option value="35">Komedi</option><option value="80">Suç</option><option value="18">Dram</option><option value="27">Korku</option><option value="878">Bilim Kurgu</option></select>
+            <select id="genre-id">
+                <option value="">Tüm Türler</option>
+                <option value="28">Aksiyon</option>
+                <option value="12">Macera</option>
+                <option value="16">Animasyon</option>
+                <option value="35">Komedi</option>
+                <option value="80">Suç</option>
+                <option value="18">Dram</option>
+                <option value="27">Korku</option>
+                <option value="878">Bilim Kurgu</option>
+            </select>
         </div>
         <div class="filter-item">
             <label>Yıllar</label>
-            <select id="year-val"><option value="">Tüm Yıllar</option><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2020">2020'ler</option><option value="2010">2010'lar</option></select>
+            <select id="year-val">
+                <option value="">Tüm Yıllar</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021</option>
+                <option value="2020">2020</option>
+                <option value="2019">2019</option>
+                <option value="2018">2018</option>
+                <option value="2017">2017</option>
+                <option value="2016">2016</option>
+                <option value="2015">2015</option>
+                <option value="2014">2014</option>
+                <option value="2013">2013</option>
+                <option value="2012">2012</option>
+                <option value="2011">2011</option>
+                <option value="2010">2010</option>
+                <option value="2009">2009</option>
+                <option value="2008">2008</option>
+                <option value="2007">2007</option>
+                <option value="2006">2006</option>
+                <option value="2005">2005</option>
+                <option value="2004">2004</option>
+                <option value="2003">2003</option>
+                <option value="2002">2002</option>
+                <option value="2001">2001</option>
+                <option value="2000-old">2000 Öncesi</option>
+            </select>
         </div>
         <div class="filter-item">
             <label>Minimum Puan</label>
-            <select id="vote-val"><option value="0">Tüm Puanlar</option><option value="8">8.0+</option><option value="7">7.0+</option><option value="5">5.0+</option></select>
+            <select id="vote-val">
+                <option value="0">Tüm Puanlar</option>
+                <option value="8">8.0+</option>
+                <option value="7">7.0+</option>
+                <option value="5">5.0+</option>
+            </select>
         </div>
         <div class="filter-item">
             <label>Sıralama</label>
-            <select id="sort-val"><option value="popularity.desc">Popülerlik</option><option value="vote_average.desc">Puan (Yüksek)</option><option value="primary_release_date.desc">Yeni Tarih</option></select>
+            <select id="sort-val">
+                <option value="popularity.desc">Popülerlik</option>
+                <option value="vote_average.desc">Puan (Yüksek)</option>
+                <option value="primary_release_date.desc">Yeni Tarih</option>
+            </select>
         </div>
     </div>
-    <button class="run-btn" onclick="initApp(false)">Listeyi Güncelle</button>
+    <button class="run-btn" onclick="initApp(false)">Robotu Çalıştır</button>
 </div>
 
 <div class="movie-grid" id="grid"></div>
@@ -99,35 +146,41 @@
 
     function changeTheme(c) { document.documentElement.style.setProperty('--main', c); }
 
-    // isRandom parametresi eklendi: Sayfa ilk açıldığında rastgele getirir
     async function initApp(isRandom = true) {
         if(isRandom) {
             currentPage = Math.floor(Math.random() * 20) + 1; 
         } else {
             currentPage = 1;
         }
-        document.getElementById('grid').innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--main);">Veriler taranıyor...</div>';
+        document.getElementById('grid').innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--main);">Robot arşivleri tarıyor...</div>';
         await fetchMovies();
     }
 
     async function fetchMovies() {
         const genre = document.getElementById('genre-id').value;
-        const year = document.getElementById('year-val').value;
+        const yearSelect = document.getElementById('year-val').value;
         const vote = document.getElementById('vote-val').value;
         const sort = document.getElementById('sort-val').value;
         const lang = document.getElementById('ui-lang').value;
         const cache = new Date().getTime();
 
         let url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=${lang}&page=${currentPage}&sort_by=${sort}&vote_average.gte=${vote}&cb=${cache}`;
+        
         if(genre) url += `&with_genres=${genre}`;
-        if(year) url += `&primary_release_year=${year}`;
+        
+        // Yıl filtresi kontrolü
+        if(yearSelect === "2000-old") {
+            url += `&release_date.lte=1999-12-31`; // 2000 öncesi
+        } else if(yearSelect) {
+            url += `&primary_release_year=${yearSelect}`;
+        }
 
         try {
             const res = await fetch(url);
             const data = await res.json();
-            if(currentPage === 1 || document.getElementById('grid').innerText.includes('taranıyor')) document.getElementById('grid').innerHTML = '';
+            if(currentPage === 1 || document.getElementById('grid').innerText.includes('tarıyor')) document.getElementById('grid').innerHTML = '';
             render(data.results);
-        } catch (e) { console.error("Hata!"); }
+        } catch (e) { console.error("API Hatası!"); }
     }
 
     function render(movies) {
@@ -153,12 +206,12 @@
             document.getElementById('v-modal').style.display = 'block';
             document.body.style.overflow = 'hidden';
             history.pushState({modal: true}, "");
-        } else { alert("Fragman bulunamadı."); }
+        } else { alert("Maalesef fragman bulunamadı."); }
     }
 
     function closeVideo() { document.getElementById('v-modal').style.display = 'none'; document.getElementById('player').innerHTML = ''; document.body.style.overflow = 'auto'; }
     window.onpopstate = () => closeVideo();
-    window.onload = () => initApp(true); // Sayfa her yenilendiğinde rastgele başlar
+    window.onload = () => initApp(true);
 </script>
 </body>
 </html>
