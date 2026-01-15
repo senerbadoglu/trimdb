@@ -3,48 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Film Rehberim | Dinamik Pro</title>
+    <title>Film Rehberim | Final Edition</title>
     <style>
         :root { --main-color: #f5c518; --bg-black: #0b0b0b; --card-bg: #1a1a1a; }
         body { background-color: var(--bg-black); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; min-height: 100vh; transition: 0.3s; }
-        
         header { background-color: #121212; padding: 15px 5%; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; flex-wrap: wrap; gap: 15px; }
-        .logo { color: var(--main-color); font-weight: 900; font-size: 28px; text-decoration: none; border: 2px solid var(--main-color); padding: 2px 8px; border-radius: 4px; cursor: pointer; transition: 0.3s; }
-        
+        .logo { color: var(--main-color); font-weight: 900; font-size: 28px; text-decoration: none; border: 2px solid var(--main-color); padding: 2px 8px; border-radius: 4px; cursor: pointer; }
         .header-controls { display: flex; gap: 15px; align-items: center; }
         #search-input { padding: 10px 15px; border-radius: 20px; border: none; background: #333; color: white; outline: none; width: 150px; }
-        
         .color-picker { display: flex; gap: 8px; }
         .color-dot { width: 18px; height: 18px; border-radius: 50%; cursor: pointer; border: 1px solid white; }
-
         .nav-container { padding: 15px 5%; background: #000; border-bottom: 1px solid #222; }
         .filter-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; align-items: center; }
         .filter-label { font-size: 12px; color: #888; text-transform: uppercase; margin-right: 5px; }
-
         .btn { background: #222; color: white; border: 1px solid #444; padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 13px; transition: 0.2s; }
         .btn:hover, .btn.active { background: var(--main-color); color: black !important; border-color: var(--main-color); font-weight: bold; }
-
         .container { padding: 20px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; }
         .movie-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; transition: 0.3s; cursor: pointer; border: 1px solid #222; display: flex; flex-direction: column; }
         .movie-card:hover { transform: translateY(-5px); border-color: var(--main-color); box-shadow: 0 0 15px var(--main-color); }
         .movie-card img { width: 100%; height: 270px; object-fit: cover; }
         .movie-info { padding: 12px; flex-grow: 1; }
         .movie-info h3 { margin: 0; font-size: 14px; height: 40px; overflow: hidden; }
-        .movie-date { font-size: 12px; color: #888; margin-top: 5px; }
-
-        .load-more-container { text-align: center; padding: 30px; }
-        .load-more-btn { background: transparent; color: var(--main-color); border: 2px solid var(--main-color); padding: 10px 30px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .load-more-btn:hover { background: var(--main-color); color: black; }
-
         .watchlist-btn { background: #333; color: white; border: none; padding: 10px; cursor: pointer; font-size: 12px; width: 100%; transition: 0.3s; border-top: 1px solid #222; }
-        .watchlist-btn:hover { background: var(--main-color); color: black; }
         .watchlist-btn.added { background: #ff4757; color: white; }
-
+        .load-more-container { text-align: center; padding: 30px; }
+        .load-more-btn { background: transparent; color: var(--main-color); border: 2px solid var(--main-color); padding: 10px 30px; border-radius: 25px; cursor: pointer; font-weight: bold; }
         footer { background: #121212; padding: 25px; text-align: center; border-top: 1px solid #333; color: #888; font-size: 13px; }
-        footer b { color: var(--main-color); }
-
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); overflow-y: auto; }
         .modal-content { background: #1a1a1a; margin: 5% auto; padding: 25px; width: 90%; max-width: 800px; border-radius: 15px; position: relative; border: 1px solid var(--main-color); }
         .close { position: absolute; right: 20px; top: 10px; font-size: 35px; color: white; cursor: pointer; }
         .video-container { position: relative; width: 100%; padding-bottom: 56.25%; margin-bottom: 20px; border-radius: 10px; overflow: hidden; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="#" class="logo" onclick="location.reload()">FILM-TR</a>
+    <div class="header-controls">
+        <div class="color-picker">
+            <div class="color-dot" style="background:#f5c518" onclick="setTheme('#f5c518')"></div>
+            <div class="color-dot" style="background:#ff4757" onclick="setTheme('#ff4757')"></div>
+            <div class="color-dot" style="background:#1e90ff" onclick="setTheme('#1e90ff')"></div>
+            <div class="color-dot" style="background:#2ed573" onclick="setTheme('#2ed573')"></div>
+        </div>
+        <select id="lang" onchange="changeLang()" style="background:#333; color:white; border:none; padding:5px; border-radius:5px;">
+            <option value="tr-TR">TR</option>
+            <option value="en-US">EN</option>
+        </select>
+        <input type="text" id="search-input" placeholder="Film ara...">
+    </div>
+</header>
+
+<div class="nav-container">
+    <div class="filter-group">
+        <span class="filter-label" id="label-discover">KEŞFET:</span>
+        <button class="btn active" id="btn-pop" onclick="resetAndLoad('popular', null, this, true)">Sürpriz Filmler!</button>
+        <button class="btn" id="btn-new" onclick="resetAndLoad('now_playing', null, this)">En Yeniler</button>
+        <button class="btn" id="btn-watch" onclick="showWatchlist(this)">Listem (0)</button>
+    </div>
+    <div class="filter-group" id="genres-div"></div>
+</div>
+
+<div class="container" id="movie-grid"></div>
+
+<div class="load-more-container" id="load-more-div">
+    <button class="load-more-btn" id="load-more-btn" onclick="loadMore()">Daha Fazla Film Yükle</button>
+</div>
+
+<div id="movieModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div id="modal-body"></div>
+    </div>
+</div>
+
+<footer><p>© 2026 <b>Şener Badoğlu</b> | <span id="footer-note">Keyifli seyirler!</span></p></footer>
+
+<script>
+    const API_KEY = '5157610ea853936f008717feb19e6a9f';
+    let curLang = 'tr-TR';
+    let watchlist = JSON.parse(localStorage.getItem('myList')) || [];
+    let currentPage = 1;
+    let currentType = 'popular';
+    let currentGenre = null;
+
+    const langTexts = {
+        'tr-TR': { discover: 'KEŞFET:', genres: 'TÜRLER:', pop: 'Sürpriz Filmler!', new: 'En Yeniler', list: 'Listem', search: 'Film ara...', note: 'Keyifli seyirler!', add: 'Listeye Ekle', rem: 'Listeden Çıkar', more: 'Daha Fazla Film Yükle' },
+        'en-US': { discover: 'DISCOVER:', genres: 'GENRES:', pop: 'Surprise Me!', new: 'Newest', list: 'My List', search: 'Search...', note: 'Enjoy!', add: 'Add to List', rem: 'Remove', more: 'Load More' }
+    };
+
+    const genreData = {
+        'tr-TR': [ {id:28, n:'Aksiyon'}, {id:35, n:'Komedi'}, {id:27, n:'Korku'}, {id:878, n:'B.Kurgu'} ],
+        'en-US': [ {id:28, n:'Action'}, {id:35, n:'Comedy'}, {id:27, n:'Horror'}, {id:878, n:'Sci-Fi'} ]
+    };
+
+    function setTheme(c) { document.documentElement.style.setProperty('--main-color', c); }
+    
+    function changeLang() {
+        curLang = document.getElementById('lang').value;
+        const t = langTexts[curLang];
+        document.getElementById('search-input').placeholder = t.search;
+        document.getElementById('label-discover').innerText = t.discover;
+        document.getElementById('btn-pop').innerText = t.pop;
+        document.getElementById('btn-new').innerText = t.new;
+        document.getElementById('footer-note').innerText = t.note;
+        document.getElementById('load-more-btn').innerText = t.more;
+        renderGenres();
+        resetAndLoad('popular', null, document.getElementById('btn-pop'), true);
+    }
+
+    function renderGenres() {
+        const div = document.getElementById('genres-div');
+        div.innerHTML = `<span class="filter-label">${langTexts[curLang].genres}</span>`;
+        genreData[curLang].forEach(g => {
+            const b = document.createElement('button');
+            b.className = 'btn'; b.innerText = g.n;
+            b.onclick = () => resetAndLoad('discover', g.id, b);
+            div.appendChild(b);
+        });
+    }
+
+    function resetAndLoad(type, gId = null, btn = null, random = false) {
+        currentPage = random ? Math.floor(Math.random() * 20) + 1 : 1; 
+        currentType = type;
+        currentGenre = gId;
+        document.getElementById('movie-grid').innerHTML = '';
+        if(btn) {
+            document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        getMovies();
+    }
+
+    async function getMovies() {
+        let url = `https://api.themoviedb.org/3/movie/${currentType}?api_key=${API_KEY}&language=${curLang}&page=${currentPage}`;
+        if(currentType === 'discover') url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${currentGenre}&language=${curLang}&page=${currentPage}`;
+        if(currentType === 'search') url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY
