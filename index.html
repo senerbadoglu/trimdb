@@ -3,151 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Film Robotu | Kesin Çalışan Versiyon</title>
+    <title>Film Robotu | Gelişmiş Filtreleme</title>
     <style>
-        :root { --main: #f5c518; --bg: #0b0b0b; --card: #1a1a1a; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        :root { --main-color: #f5c518; --bg-black: #0b0b0b; --card-bg: #1a1a1a; --filter-bg: #222; }
+        body { background-color: var(--bg-black); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; overflow-x: hidden; }
         
         /* Header */
-        header { background: #121212; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 1000; }
-        .logo { color: var(--main); font-weight: 900; font-size: 22px; text-decoration: none; border: 2px solid var(--main); padding: 4px 10px; border-radius: 5px; }
+        header { background: #121212; padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 1000; }
+        .logo { color: var(--main-color); font-weight: 900; font-size: 24px; text-decoration: none; border: 2px solid var(--main-color); padding: 5px 10px; border-radius: 5px; }
+        .header-tools { display: flex; align-items: center; gap: 15px; }
+        .dot { width: 15px; height: 15px; border-radius: 50%; cursor: pointer; border: 1px solid #fff; }
+
+        /* Film Robotu Paneli */
+        .robot-container { background: #181818; padding: 20px 5%; border-bottom: 1px solid #333; }
+        .robot-title { font-size: 20px; font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .robot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
         
-        /* Film Robotu Filtre Paneli */
-        .robot-area { background: #181818; padding: 20px 5%; border-bottom: 1px solid #333; }
-        .robot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; }
-        .f-box { background: #222; padding: 10px; border-radius: 8px; border: 1px solid #444; }
-        .f-box label { display: block; font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase; }
-        .f-box select { width: 100%; background: transparent; color: white; border: none; outline: none; font-size: 14px; cursor: pointer; }
+        .filter-box { background: var(--filter-bg); padding: 10px; border-radius: 8px; border: 1px solid #333; position: relative; }
+        .filter-box label { display: block; font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase; }
+        .filter-box select { width: 100%; background: transparent; color: white; border: none; outline: none; font-size: 14px; cursor: pointer; appearance: none; }
         
-        .btn-run { background: var(--main); color: black; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; transition: 0.3s; }
-        .btn-run:hover { opacity: 0.8; transform: scale(1.01); }
+        /* Arama Butonu */
+        .search-btn { background: var(--main-color); color: black; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; width: 100%; }
+        .search-btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        /* Film Grid */
-        .grid { padding: 20px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
-        .card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #222; position: relative; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); border-color: var(--main); }
-        .card img { width: 100%; height: 250px; object-fit: cover; cursor: pointer; }
-        .puan { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: var(--main); padding: 3px 7px; border-radius: 5px; font-size: 12px; font-weight: bold; }
-        .info { padding: 12px; }
-        .info h3 { margin: 0; font-size: 14px; height: 35px; overflow: hidden; color: #fff; }
-        .tr-btn { background: #e50914; color: white; border: none; width: 100%; padding: 10px; margin-top: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        /* Film Kartları */
+        .grid { padding: 25px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; }
+        .card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid #222; transition: 0.4s; position: relative; }
+        .card:hover { transform: translateY(-10px); border-color: var(--main-color); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .card img { width: 100%; height: 280px; object-fit: cover; cursor: pointer; }
+        .info { padding: 15px; }
+        .info h3 { margin: 0 0 8px 0; font-size: 14px; height: 38px; overflow: hidden; line-height: 1.4; }
+        .badge { background: rgba(0,0,0,0.7); color: var(--main-color); padding: 3px 7px; border-radius: 4px; font-size: 12px; font-weight: bold; position: absolute; top: 10px; right: 10px; }
+        .trailer-btn { background: #e50914; color: white; border: none; width: 100%; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 5px; }
 
-        #msg { grid-column: 1/-1; text-align: center; padding: 100px 0; color: var(--main); font-size: 20px; font-weight: bold; }
+        /* Modal & Load More */
+        .load-more { text-align: center; padding: 40px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; }
+        .modal-content { width: 90%; max-width: 900px; margin: 5% auto; position: relative; }
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 15px; overflow: hidden; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .close { position: absolute; right: -40px; top: -40px; font-size: 40px; color: white; cursor: pointer; }
 
-        /* Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; }
-        .modal-body { width: 90%; max-width: 800px; margin: 5% auto; position: relative; }
-        .v-cont { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 10px; overflow: hidden; }
-        .v-cont iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-        .close { position: absolute; right: -30px; top: -30px; font-size: 40px; color: white; cursor: pointer; }
+        @media (max-width: 768px) { 
+            .close { right: 0; top: -50px; } 
+        }
+        
+        /* TELEFON İÇİN EK DÜZENLEME */
+        @media (max-width: 600px) {
+            .robot-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+                gap: 15px !important;
+            }
+            .card img {
+                height: 220px !important;
+            }
+            .info h3 {
+                font-size: 13px !important;
+                height: 35px !important;
+            }
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <a href="#" class="logo">FILM ROBOTU</a>
-    <div style="display:flex; gap:10px;">
-        <select id="lang" onchange="runRobot()" style="background:#333; color:white; border:none; padding:5px; border-radius:5px;">
-            <option value="tr-TR">Türkçe</option>
-            <option value="en-US">English</option>
+    <a href="#" class="logo" onclick="location.reload()">FILM-ROBOTU</a>
+    <div class="header-tools">
+        <div class="dot" style="background: #f5c518;" onclick="setTheme('#f5c518')"></div>
+        <div class="dot" style="background: #ff4757;" onclick="setTheme('#ff4757')"></div>
+        <div class="dot" style="background: #1e90ff;" onclick="setTheme('#1e90ff')"></div>
+        <select id="main-lang" onchange="applyFilters()" style="background:#333; color:white; border:none; border-radius:4px; padding:2px 5px;">
+            <option value="tr-TR">TR</option>
+            <option value="en-US">EN</option>
         </select>
-        <div style="width:20px; height:20px; background:#f5c518; border-radius:50%; cursor:pointer;" onclick="document.documentElement.style.setProperty('--main', '#f5c518')"></div>
-        <div style="width:20px; height:20px; background:#ff4757; border-radius:50%; cursor:pointer;" onclick="document.documentElement.style.setProperty('--main', '#ff4757')"></div>
     </div>
 </header>
 
-<div class="robot-area">
+<div class="robot-container">
+    <div class="robot-title">🔍 Film Robotu</div>
     <div class="robot-grid">
-        <div class="f-box"><label>Tür</label><select id="genre"><option value="">Hepsi</option><option value="28">Aksiyon</option><option value="12">Macera</option><option value="35">Komedi</option><option value="27">Korku</option><option value="878">Bilim Kurgu</option></select></div>
-        <div class="f-box"><label>Yıl</label><select id="year"><option value="">Hepsi</option><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2010">2010'lar</option></select></div>
-        <div class="f-box"><label>Puan</label><select id="rating"><option value="0">Hepsi</option><option value="8">8.0+</option><option value="7">7.0+</option><option value="5">5.0+</option></select></div>
-        <div class="f-box"><label>Sıralama</label><select id="sort"><option value="popularity.desc">Popüler</option><option value="vote_average.desc">Puan</option><option value="release_date.desc">Yeni</option></select></div>
+        <div class="filter-box">
+            <label>Türler</label>
+            <select id="f-genre">
+                <option value="">Hepsi</option>
+                <option value="28">Aksiyon</option>
+                <option value="12">Macera</option>
+                <option value="35">Komedi</option>
+                <option value="27">Korku</option>
+                <option value="878">Bilim Kurgu</option>
+                <option value="18">Dram</option>
+            </select>
+        </div>
+        <div class="filter-box">
+            <label>Yıllar</label>
+            <select id="f-year">
+                <option value="">Hepsi</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2010">2010s</option>
+                <option value="2000">2000s</option>
+            </select>
+        </div>
+        <div class="filter-box">
+            <label>IMDb Puanı</label>
+            <select id="f-rating">
+                <option value="0">Hepsi</option>
+                <option value="8">8.0+ Üzeri</option>
+                <option value="7">7.0+ Üzeri</option>
+                <option value="5">5.0+ Üzeri</option>
+            </select>
+        </div>
+        <div class="filter-box">
+            <label>Sıralama</label>
+            <select id="f-sort">
+                <option value="popularity.desc">Popülerlik</option>
+                <option value="vote_average.desc">Puan (Yüksek)</option>
+                <option value="primary_release_date.desc">Tarih (Yeni)</option>
+            </select>
+        </div>
+        <button class="search-btn" onclick="applyFilters()">Robotu Çalıştır</button>
     </div>
-    <button class="btn-run" onclick="runRobot()">ROBOTU ÇALIŞTIR</button>
 </div>
 
-<div class="grid" id="main-grid">
-    <div id="msg">Robot hazırlanıyor, lütfen bekleyin...</div>
-</div>
+<div class="grid" id="movie-grid"></div>
 
-<div style="text-align:center; padding-bottom: 50px;">
-    <button class="btn-run" style="width:220px;" onclick="nextPage()">DAHA FAZLA YÜKLE</button>
+<div class="load-more">
+    <button class="search-btn" style="width: 200px;" onclick="loadMore()">Daha Fazla Film</button>
 </div>
 
 <div id="modal" class="modal">
-    <div class="modal-body">
+    <div class="modal-content">
         <span class="close" onclick="closeV()">&times;</span>
-        <div id="v-box" class="v-cont"></div>
+        <div id="v-box" class="video-wrapper"></div>
     </div>
 </div>
 
 <script>
     const API_KEY = '5157610ea853936f008717feb19e6a9f';
-    let p = 1;
+    let page = 1;
 
-    async function runRobot() {
-        p = 1;
-        document.getElementById('main-grid').innerHTML = '<div id="msg">Veriler taranıyor...</div>';
-        fetchData();
+    function setTheme(c) { 
+        document.documentElement.style.setProperty('--main-color', c); 
     }
 
-    async function fetchData() {
-        const g = document.getElementById('genre').value;
-        const y = document.getElementById('year').value;
-        const r = document.getElementById('rating').value;
-        const s = document.getElementById('sort').value;
-        const l = document.getElementById('lang').value;
-        const t = new Date().getTime(); // Önbelleği zorla kıran zaman damgası
+    async function applyFilters() {
+        page = 1;
+        document.getElementById('movie-grid').innerHTML = '';
+        fetchFromRobot();
+    }
 
-        let url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=${l}&page=${p}&sort_by=${s}&vote_average.gte=${r}&cb=${t}`;
-        if(g) url += `&with_genres=${g}`;
-        if(y) url += `&primary_release_year=${y}`;
+    async function fetchFromRobot() {
+        const genre = document.getElementById('f-genre').value;
+        const year = document.getElementById('f-year').value;
+        const rating = document.getElementById('f-rating').value;
+        const sort = document.getElementById('f-sort').value;
+        const lang = document.getElementById('main-lang').value;
+        
+        const grid = document.getElementById('movie-grid');
+        
+        // YÜKLENİYOR YAZISI
+        if (page === 1) {
+            grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--main-color)">⏳ Filmler yükleniyor...</div>';
+        }
+
+        let url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=${lang}&page=${page}&sort_by=${sort}&vote_average.gte=${rating}`;
+        
+        if(genre) url += `&with_genres=${genre}`;
+        if(year) url += `&primary_release_year=${year}`;
 
         try {
             const res = await fetch(url);
             const data = await res.json();
-            if(p === 1) document.getElementById('main-grid').innerHTML = '';
             
-            data.results.forEach(m => {
-                if(!m.poster_path) return;
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <div class="puan">★ ${m.vote_average.toFixed(1)}</div>
-                    <img src="https://image.tmdb.org/t/p/w500${m.poster_path}" onclick="openV(${m.id})">
-                    <div class="info">
-                        <h3>${m.title}</h3>
-                        <button class="tr-btn" onclick="openV(${m.id})">Fragmanı İzle</button>
-                    </div>`;
-                document.getElementById('main-grid').appendChild(card);
-            });
-        } catch (err) {
-            document.getElementById('main-grid').innerHTML = '<div id="msg">Bağlantı hatası! Lütfen internetinizi kontrol edin.</div>';
+            // BOŞ LİSTE KONTROLÜ
+            if (page === 1 && data.results.length === 0) {
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px">🎬 Film bulunamadı! Filtreleri değiştirmeyi deneyin.</div>';
+                return;
+            }
+            
+            render(data.results);
+        } catch (e) { 
+            console.log("Hata:", e);
+            // HATA MESAJI
+            if (page === 1) {
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#ff4757">❌ Filmler yüklenirken hata oluştu. İnternet bağlantınızı kontrol edin.</div>';
+            }
         }
     }
 
-    function nextPage() { p++; fetchData(); }
+    function render(list) {
+        // BOŞ LİSTE KONTROLÜ 2
+        if (list.length === 0 && page === 1) {
+            document.getElementById('movie-grid').innerHTML = 
+                '<div style="grid-column:1/-1; text-align:center; padding:40px; color:white">🎬 Film bulunamadı! Filtreleri değiştirmeyi deneyin.</div>';
+            return;
+        }
+        
+        const grid = document.getElementById('movie-grid');
+        // İLK YÜKLEME DEĞİLSE ESKİ FİLMLERİ SİLME
+        if (page === 1) {
+            grid.innerHTML = '';
+        }
+        
+        list.forEach(m => {
+            if(!m.poster_path) return;
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.innerHTML = `
+                <div class="badge">★ ${m.vote_average.toFixed(1)}</div>
+                <img src="https://image.tmdb.org/t/p/w500${m.poster_path}" onclick="openV(${m.id})">
+                <div class="info">
+                    <h3>${m.title}</h3>
+                    <button class="trailer-btn" onclick="openV(${m.id})">Fragmanı İzle</button>
+                </div>`;
+            grid.appendChild(div);
+        });
+    }
+
+    function loadMore() { 
+        page++; 
+        fetchFromRobot(); 
+    }
 
     async function openV(id) {
-        const l = document.getElementById('lang').value;
-        const res = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}&language=${l}`);
-        const data = await res.json();
-        const v = data.results.find(x => x.type === 'Trailer') || data.results[0];
+        const lang = document.getElementById('main-lang').value;
+        const res = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}&language=${lang}`);
+        let data = await res.json();
+        let v = data.results.find(x => x.type === 'Trailer') || data.results[0];
         
         if(v) {
             document.getElementById('v-box').innerHTML = `<iframe src="https://www.youtube.com/embed/${v.key}?autoplay=1" allowfullscreen></iframe>`;
             document.getElementById('modal').style.display = 'block';
-            history.pushState({modal: true}, "");
-        } else { alert("Maalesef fragman bulunamadı."); }
+            history.pushState({m:true}, "");
+        } else { 
+            alert("Bu film için fragman bulunamadı."); 
+        }
     }
 
-    function closeV() {
-        document.getElementById('modal').style.display = 'none';
+    function closeV() { 
+        document.getElementById('modal').style.display = 'none'; 
         document.getElementById('v-box').innerHTML = '';
     }
 
     window.onpopstate = () => closeV();
-    window.onload = runRobot; // Sayfa tamamen yüklendiğinde robotu çalıştır
+    window.onload = () => fetchFromRobot();
 </script>
 </body>
 </html>
