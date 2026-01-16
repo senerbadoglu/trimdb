@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRimdb PRO | v13.0 Hyper-Data</title>
+    <title>TRimdb PRO | v14.0 Star Cast</title>
     <style>
         :root { --sari: #f5c518; --siyah: #000; --gri: #121212; --kutu: #1c1c1c; }
-        body { background: var(--siyah); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        body { background: var(--siyah); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
         
         header { background: var(--gri); padding: 15px 5%; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--sari); position: sticky; top: 0; z-index: 1000; }
         .logo { font-size: 24px; font-weight: 900; background: var(--sari); color: black; padding: 5px 15px; border-radius: 5px; text-decoration: none; }
+        .live-tag { font-size: 10px; background: #00ff00; color: #000; padding: 2px 8px; border-radius: 10px; animation: pulse 1.5s infinite; font-weight: bold; }
+
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0,255,0,0.7); } 70% { box-shadow: 0 0 0 10px rgba(0,255,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,255,0,0); } }
 
         .filtre-alani { background: #0a0a0a; padding: 20px 5%; border-bottom: 1px solid #333; }
         .filtreler { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
         
-        /* BEYAZLIK SORUNUNU ÇÖZEN KISIM */
         .secim-kutusu { background: var(--kutu); padding: 10px; border-radius: 8px; border: 1px solid #444; }
         .secim-kutusu label { display: block; color: var(--sari); font-size: 10px; font-weight: bold; margin-bottom: 5px; }
         .secim-kutusu select { 
@@ -25,30 +27,63 @@
 
         .film-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; padding: 30px 5%; }
         .film { background: var(--kutu); border-radius: 12px; overflow: hidden; border: 1px solid #222; position: relative; transition: 0.3s; cursor: pointer; }
-        .film:hover { transform: scale(1.03); border-color: var(--sari); }
+        .film:hover { transform: translateY(-5px); border-color: var(--sari); box-shadow: 0 5px 15px rgba(245, 197, 24, 0.2); }
         .film img { width: 100%; height: 240px; object-fit: cover; }
         .puan-badge { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: var(--sari); padding: 3px 7px; border-radius: 5px; font-size: 12px; border: 1px solid var(--sari); font-weight: bold; }
-        .bilgi { padding: 10px; text-align: center; font-size: 12px; font-weight: 600; }
+        .bilgi { padding: 10px; text-align: center; font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* MODAL TASARIMI */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; overflow-y: auto; }
-        .modal-icerik { width: 95%; max-width: 1000px; margin: 40px auto; background: #0d0d0d; border-radius: 20px; display: flex; flex-wrap: wrap; position: relative; border: 1px solid #333; }
-        .kapat { position: absolute; top: 15px; right: 20px; color: #fff; font-size: 30px; cursor: pointer; z-index: 100; }
+        /* ANA FİLM DETAY MODAL */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; overflow-y: auto; animation: fadeIn 0.3s; }
+        .modal-icerik { width: 95%; max-width: 1000px; margin: 40px auto; background: #0d0d0d; border-radius: 20px; display: flex; flex-wrap: wrap; position: relative; border: 1px solid #333; overflow: hidden; }
+        .kapat { position: absolute; top: 15px; right: 20px; color: #fff; font-size: 30px; cursor: pointer; z-index: 100; transition: 0.2s; }
+        .kapat:hover { color: var(--sari); }
         .detay-sol { flex: 1; min-width: 300px; }
         .detay-sol img { width: 100%; height: 100%; object-fit: cover; border-radius: 20px 0 0 20px; }
         .detay-sag { flex: 1.5; min-width: 350px; padding: 30px; }
-        .detay-sag h2 { color: var(--sari); margin: 0; }
-        .ozet { color: #ccc; line-height: 1.6; background: #161616; padding: 15px; border-radius: 10px; margin: 15px 0; border-left: 3px solid var(--sari); }
-        .tablo-ozellik { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .t-item b { color: var(--sari); display: block; font-size: 11px; }
-        .video-container { margin-top: 20px; border-radius: 12px; overflow: hidden; aspect-ratio: 16/9; background: #000; border: 1px solid #333; }
+        .detay-sag h2 { color: var(--sari); margin: 0; font-size: 28px; }
+        .detay-meta { color: #888; margin: 10px 0; font-size: 14px; }
+        .ozet { color: #ccc; line-height: 1.6; background: #161616; padding: 15px; border-radius: 10px; margin: 20px 0; font-size: 15px; border-left: 3px solid var(--sari); }
+        
+        .tablo-ozellik { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .t-item b { color: var(--sari); display: block; font-size: 11px; text-transform: uppercase; margin-bottom: 3px; }
+        .t-item span { font-size: 14px; color: #fff; }
+
+        .video-container { border-radius: 12px; overflow: hidden; aspect-ratio: 16/9; background: #000; border: 1px solid #222; }
+
+        /* OYUNCU KARTLARI */
+        .oyuncu-galeri { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 25px; border-top: 1px solid #333; padding-top: 20px; }
+        .oyuncu-kart { background: #1a1a1a; border-radius: 10px; overflow: hidden; text-align: center; width: 120px; cursor: pointer; transition: 0.2s; border: 1px solid #222; }
+        .oyuncu-kart:hover { transform: translateY(-5px); border-color: var(--sari); }
+        .oyuncu-kart img { width: 100%; height: 150px; object-fit: cover; }
+        .oyuncu-kart span { display: block; font-size: 12px; font-weight: bold; padding: 8px 5px; color: #ddd; }
+
+        /* YENİ OYUNCU MODALI */
+        #oyuncuModal { z-index: 10000; } /* Film modalından daha üstte */
+        #oyuncuModal .modal-icerik { max-width: 1200px; }
+        #oyuncu-detay { display: flex; flex-wrap: wrap; gap: 20px; padding: 30px; }
+        #oyuncu-sol { flex: 0.8; min-width: 250px; text-align: center; }
+        #oyuncu-sol img { width: 200px; height: 300px; object-fit: cover; border-radius: 15px; border: 2px solid var(--sari); }
+        #oyuncu-sol h3 { color: var(--sari); font-size: 24px; margin-top: 15px; }
+        #oyuncu-sol p { font-size: 13px; color: #aaa; }
+
+        #oyuncu-sag { flex: 2; min-width: 400px; }
+        #oyuncu-sag h4 { color: white; font-size: 20px; margin-bottom: 15px; }
+        #oyuncu-sag .biyografi { line-height: 1.7; color: #ddd; background: #161616; padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 3px solid var(--sari); max-height: 250px; overflow-y: auto; }
+        .oyuncu-film-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+        .oyuncu-film-grid .film { border-radius: 8px; }
+        .oyuncu-film-grid .film img { height: 200px; }
+
+        .filtre-oyuncu { display: flex; gap: 10px; margin-bottom: 20px; }
+        .filtre-oyuncu select { background: var(--kutu); color: white; border: 1px solid #444; padding: 8px; border-radius: 5px; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
 <header>
     <a href="#" class="logo">TRimdb PRO</a>
-    <span style="color: #00ff00; font-size: 12px; font-weight: bold;">● HYPER-DATA ACTIVE</span>
+    <span class="live-tag">ULTRA STAR CAST MODU</span>
 </header>
 
 <div class="filtre-alani">
@@ -60,6 +95,7 @@
                 <option value="28">Aksiyon</option><option value="12">Macera</option><option value="16">Animasyon</option>
                 <option value="35">Komedi</option><option value="80">Polisiye</option><option value="27">Korku</option>
                 <option value="18">Dram</option><option value="878">Bilim Kurgu</option><option value="turk">Türk Filmleri</option>
+                <option value="marvel">Marvel</option><option value="dc">DC</option>
             </select>
         </div>
         <div class="secim-kutusu">
@@ -96,29 +132,75 @@
         <div class="detay-sol" id="m-poster"></div>
         <div class="detay-sag">
             <h2 id="m-baslik"></h2>
-            <div style="color:#777; font-size:13px; margin:10px 0;" id="m-meta"></div>
+            <div class="detay-meta" id="m-meta"></div>
             <p class="ozet" id="m-ozet"></p>
             <div class="tablo-ozellik">
                 <div class="t-item"><b>YÖNETMEN</b><span id="m-yonetmen"></span></div>
-                <div class="t-item"><b>OYUNCULAR</b><span id="m-oyuncular"></span></div>
                 <div class="t-item"><b>BÜTÇE</b><span id="m-butce"></span></div>
                 <div class="t-item"><b>HASILAT</b><span id="m-hasilat"></span></div>
+                <div class="t-item"><b>YAPIMCI ŞİRKETİ</b><span id="m-sirket"></span></div>
             </div>
             <div class="video-container" id="m-video"></div>
+            
+            <div class="oyuncu-galeri" id="m-oyuncular">
+                <b>BAŞROL OYUNCULARI</b>
+            </div>
         </div>
     </div>
 </div>
 
+<div id="oyuncuModal" class="modal">
+    <div class="modal-icerik">
+        <span class="kapat" onclick="oyuncuModalKapat()">&times;</span>
+        <div id="oyuncu-detay">
+            <div id="oyuncu-sol">
+                <img id="oyuncu-foto" src="" alt="Oyuncu Fotoğrafı">
+                <h3 id="oyuncu-isim"></h3>
+                <p>Doğum: <span id="oyuncu-dogum"></span></p>
+                <p>Popülerlik: <span id="oyuncu-populerlik"></span></p>
+            </div>
+            <div id="oyuncu-sag">
+                <h4>Biyografi</h4>
+                <p class="biyografi" id="oyuncu-biyo"></p>
+
+                <h4>Oynadığı Filmler</h4>
+                <div class="filtre-oyuncu">
+                    <select id="oyuncu-film-yil" onchange="oyuncuFilmleriGetir(oyuncuID, this.value, document.getElementById('oyuncu-film-sira').value)">
+                        <option value="">Tüm Yıllar</option>
+                        <script>
+                            const currentYear = new Date().getFullYear();
+                            for(let y=currentYear + 1; y>=1950; y--) {
+                                document.write(`<option value="${y}">${y}</option>`);
+                            }
+                        </script>
+                    </select>
+                    <select id="oyuncu-film-sira" onchange="oyuncuFilmleriGetir(oyuncuID, document.getElementById('oyuncu-film-yil').value, this.value)">
+                        <option value="popularity.desc">Popülerlik</option>
+                        <option value="release_date.desc">Yeni Tarih</option>
+                        <option value="vote_average.desc">Puan</option>
+                    </select>
+                </div>
+                <div class="oyuncu-film-grid" id="oyuncu-film-liste"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
     const API_KEY = '5157610ea853936f008717feb19e6a9f';
+    let oyuncuID = null; // Aktif oyuncunun ID'sini tutar
 
     async function filmleriGetir() {
         const liste = document.getElementById('liste');
         const tur = document.getElementById('tur').value;
         const yil = document.getElementById('yil').value;
-        liste.innerHTML = '<p style="grid-column:1/-1; text-align:center;">Veri Hattına Bağlanılıyor...</p>';
+        liste.innerHTML = '<p style="grid-column:1/-1; text-align:center;">Filmler yükleniyor...</p>';
 
         let tP = tur === "turk" ? "&with_original_language=tr" : (tur ? `&with_genres=${tur}` : "");
+        if (tur === "marvel") tP = "&with_companies=420";
+        if (tur === "dc") tP = "&with_companies=9993";
+
         let yP = yil === "old" ? "&primary_release_date.lte=1999-12-31" : (yil ? `&primary_release_year=${yil}` : "");
 
         const url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=tr-TR&sort_by=${document.getElementById('sira').value}&vote_average.gte=${document.getElementById('puan').value}${tP}${yP}`;
@@ -127,6 +209,10 @@
             const res = await fetch(url);
             const data = await res.json();
             liste.innerHTML = '';
+            if (data.results.length === 0) {
+                liste.innerHTML = '<p style="grid-column:1/-1; text-align:center;">Bu kriterlere uygun film bulunamadı.</p>';
+                return;
+            }
             data.results.forEach(f => {
                 if(!f.poster_path) return;
                 const item = document.createElement('div');
@@ -135,7 +221,7 @@
                 item.innerHTML = `<div class="puan-badge">★ ${f.vote_average.toFixed(1)}</div><img src="https://image.tmdb.org/t/p/w500${f.poster_path}"><div class="bilgi">${f.title}</div>`;
                 liste.appendChild(item);
             });
-        } catch (e) { console.log(e); }
+        } catch (e) { console.error("Film listesi çekilirken hata:", e); }
     }
 
     async function detayGetir(id) {
@@ -149,20 +235,112 @@
         
         const director = f.credits.crew.find(x => x.job === 'Director');
         document.getElementById('m-yonetmen').innerText = director ? director.name : "Veri Yok";
-        document.getElementById('m-oyuncular').innerText = f.credits.cast.slice(0,3).map(a => a.name).join(', ') || "Veri Yok";
+        
         document.getElementById('m-butce').innerText = f.budget > 1000 ? "$" + f.budget.toLocaleString() : "Belirtilmemiş";
         document.getElementById('m-hasilat').innerText = f.revenue > 1000 ? "$" + f.revenue.toLocaleString() : "Belirtilmemiş";
+        document.getElementById('m-sirket').innerText = f.production_companies[0]?.name || "Veri Yok";
 
         const video = f.videos.results.find(v => v.type === 'Trailer') || f.videos.results[0];
         document.getElementById('m-video').innerHTML = video ? 
             `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${video.key}" frameborder="0" allowfullscreen></iframe>` : 
             `<div style="height:100%; display:flex; align-items:center; justify-content:center; background:#111; color:#444;">Fragman Yayında Değil</div>`;
 
+        // Oyuncu Galerisi
+        const oyuncuGaleri = document.getElementById('m-oyuncular');
+        oyuncuGaleri.innerHTML = '<b>BAŞROL OYUNCULARI</b>'; // Başlığı sıfırla
+        f.credits.cast.slice(0, 5).forEach(cast => {
+            if (!cast.profile_path) return; // Fotoğrafı olmayan oyuncuyu gösterme
+            const kart = document.createElement('div');
+            kart.className = 'oyuncu-kart';
+            kart.onclick = () => oyuncuDetayAc(cast.id);
+            kart.innerHTML = `
+                <img src="https://image.tmdb.org/t/p/w200${cast.profile_path}" alt="${cast.name}">
+                <span>${cast.name}</span>
+            `;
+            oyuncuGaleri.appendChild(kart);
+        });
+
         document.getElementById('filmModal').style.display = 'block';
         document.body.style.overflow = 'hidden';
     }
 
-    function modalKapat() { document.getElementById('filmModal').style.display = 'none'; document.getElementById('m-video').innerHTML = ''; document.body.style.overflow = 'auto'; }
+    function modalKapat() { 
+        document.getElementById('filmModal').style.display = 'none'; 
+        document.getElementById('m-video').innerHTML = ''; 
+        document.body.style.overflow = 'auto';
+    }
+
+    async function oyuncuDetayAc(personId) {
+        oyuncuID = personId; // Aktif oyuncu ID'sini kaydet
+
+        // Oyuncu detaylarını çek
+        const personRes = await fetch(`https://api.themoviedb.org/3/person/${personId}?api_key=${API_KEY}&language=tr-TR`);
+        const personData = await personRes.json();
+
+        document.getElementById('oyuncu-foto').src = personData.profile_path ? `https://image.tmdb.org/t/p/w300${personData.profile_path}` : 'https://via.placeholder.com/200x300?text=Foto+Yok';
+        document.getElementById('oyuncu-isim').innerText = personData.name;
+        document.getElementById('oyuncu-dogum').innerText = personData.birthday || 'Bilinmiyor';
+        document.getElementById('oyuncu-populerlik').innerText = personData.popularity.toFixed(1);
+        document.getElementById('oyuncu-biyo').innerText = personData.biography || 'Bu oyuncu hakkında Türkçe biyografi bulunmuyor.';
+        
+        // Oyuncunun filmlerini getir (varsayılan olarak popülerliğe göre)
+        oyuncuFilmleriGetir(personId, '', 'popularity.desc');
+
+        document.getElementById('oyuncuModal').style.display = 'block';
+        document.getElementById('filmModal').style.display = 'none'; // Film modalını kapat
+    }
+
+    async function oyuncuFilmleriGetir(personId, year = '', sortBy = 'popularity.desc') {
+        const filmListe = document.getElementById('oyuncu-film-liste');
+        filmListe.innerHTML = '<p style="text-align:center; color:#888;">Filmler yükleniyor...</p>';
+
+        let yearFilter = year ? `&primary_release_year=${year}` : '';
+
+        const url = `https://api.themoviedb.org/3/person/${personId}/movie_credits?api_key=${API_KEY}&language=tr-TR`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        let filmler = data.cast;
+        
+        // Filtreleme ve sıralama
+        if (year) {
+            filmler = filmler.filter(f => new Date(f.release_date).getFullYear() == year);
+        }
+        filmler.sort((a, b) => {
+            if (sortBy === 'popularity.desc') return b.popularity - a.popularity;
+            if (sortBy === 'release_date.desc') return new Date(b.release_date) - new Date(a.release_date);
+            if (sortBy === 'vote_average.desc') return b.vote_average - a.vote_average;
+            return 0;
+        });
+
+        filmListe.innerHTML = '';
+        if (filmler.length === 0) {
+            filmListe.innerHTML = '<p style="text-align:center; color:#888;">Bu kriterlere uygun film bulunamadı.</p>';
+            return;
+        }
+
+        filmler.forEach(f => {
+            if(!f.poster_path) return;
+            const kart = document.createElement('div');
+            kart.className = 'film';
+            kart.onclick = () => { oyuncuModalKapat(); detayGetir(f.id); }; // Yeni film detayını aç
+            kart.innerHTML = `
+                <div class="puan-badge">★ ${f.vote_average.toFixed(1)}</div>
+                <img src="https://image.tmdb.org/t/p/w500${f.poster_path}">
+                <div class="bilgi">${f.title}</div>
+            `;
+            filmListe.appendChild(kart);
+        });
+    }
+
+    function oyuncuModalKapat() {
+        document.getElementById('oyuncuModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+        document.getElementById('oyuncu-film-liste').innerHTML = ''; // Liste içeriğini temizle
+        document.getElementById('oyuncu-film-yil').value = ""; // Filtreleri sıfırla
+        document.getElementById('oyuncu-film-sira').value = "popularity.desc";
+    }
+
     window.onload = filmleriGetir;
 </script>
 </body>
