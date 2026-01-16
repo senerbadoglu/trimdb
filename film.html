@@ -3,17 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRimdb PRO | v16.0 Hyper-Sync</title>
+    <title>TRimdb PRO | v16.1 Premium</title>
     <style>
         :root { --sari: #f5c518; --siyah: #000; --gri: #121212; --kutu: #1c1c1c; --accent: #ff0055; }
         body { background: var(--siyah); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
-        header { background: var(--gri); padding: 15px 5%; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--sari); position: sticky; top: 0; z-index: 1000; }
-        .logo { font-size: 24px; font-weight: 900; background: var(--sari); color: black; padding: 5px 15px; border-radius: 5px; text-decoration: none; }
+        
+        /* HEADER & LOGO */
+        header { background: var(--gri); padding: 10px 5%; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--sari); position: sticky; top: 0; z-index: 1000; }
+        .site-logo { height: 60px; cursor: pointer; transition: 0.3s; }
+        .site-logo:hover { transform: scale(1.05); }
+
+        /* FİLTRE ALANI - BEYAZLIK DÜZELTME */
         .filtre-alani { background: #0a0a0a; padding: 20px 5%; border-bottom: 1px solid #333; }
         .filtreler { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
         .secim-kutusu { background: var(--kutu); padding: 8px; border-radius: 8px; border: 1px solid #444; }
         .secim-kutusu label { display: block; color: var(--sari); font-size: 10px; font-weight: bold; margin-bottom: 4px; }
-        .secim-kutusu select { width: 100%; background: transparent; color: white; border: none; outline: none; font-size: 13px; cursor: pointer; }
+        
+        /* Dropdown Beyazlık Fix */
+        .secim-kutusu select { 
+            width: 100%; 
+            background: #1c1c1c; /* Koyu arka plan */
+            color: white; 
+            border: none; 
+            outline: none; 
+            font-size: 13px; 
+            cursor: pointer;
+            appearance: none; /* Standart görünümü kaldır */
+        }
+        /* Safari/Chrome için dropdown içi renkleri zorla */
+        .secim-kutusu select option {
+            background-color: #1c1c1c;
+            color: white;
+        }
+
         .film-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; padding: 30px 5%; }
         .film { background: var(--kutu); border-radius: 12px; overflow: hidden; border: 1px solid #222; position: relative; transition: 0.3s; cursor: pointer; }
         .film:hover { transform: translateY(-5px); border-color: var(--sari); }
@@ -21,6 +43,7 @@
         .puan-badge { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: var(--sari); padding: 3px 7px; border-radius: 5px; font-size: 12px; border: 1px solid var(--sari); font-weight: bold; }
         .bilgi { padding: 10px; text-align: center; font-size: 12px; font-weight: 600; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 
+        /* MODAL */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 9999; overflow-y: auto; }
         .modal-icerik { width: 95%; max-width: 1200px; margin: 20px auto; background: #0d0d0d; border-radius: 20px; border: 1px solid #333; display: flex; flex-wrap: wrap; position: relative; overflow: hidden; }
         .kapat { position: absolute; top: 15px; right: 20px; color: #fff; font-size: 35px; cursor: pointer; z-index: 100; }
@@ -43,21 +66,21 @@
         .o-panel { padding: 40px; display: flex; gap: 30px; flex-wrap: wrap; }
         .o-foto { width: 220px; border-radius: 15px; border: 2px solid var(--sari); height: 330px; object-fit: cover; }
         .o-biyo { flex: 1; min-width: 300px; }
-        .o-film-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; margin-top: 20px; max-height: 500px; overflow-y: auto; padding-right: 10px; }
+        .o-film-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; margin-top: 20px; max-height: 500px; overflow-y: auto; }
     </style>
 </head>
 <body>
 
 <header>
-    <a href="#" class="logo">TRimdb PRO</a>
-    <div style="color: #00ff00; font-size: 11px;">SYNCHRONIZED DATA ACTIVE</div>
+    <img src="https://r.resimlink.com/5V3Xp.png" class="site-logo" alt="TRimdb Logo" onclick="location.reload()">
+    <div style="color: #00ff00; font-size: 11px; letter-spacing: 1px;">PREMIUM v16.1 ACTIVE</div>
 </header>
 
 <div class="filtre-alani">
     <div class="filtreler">
         <div class="secim-kutusu"><label>TÜR</label><select id="tur" onchange="filmleriGetir()"><option value="">Tümü</option><option value="28">Aksiyon</option><option value="12">Macera</option><option value="16">Animasyon</option><option value="35">Komedi</option><option value="27">Korku</option><option value="878">Bilim Kurgu</option></select></div>
         <div class="secim-kutusu"><label>YIL</label><select id="yil" onchange="filmleriGetir()"><option value="">Tümü</option><script>for(let y=2026;y>=2000;y--)document.write(`<option value="${y}">${y}</option>`)</script></select></div>
-        <div class="secim-kutusu"><label>PUAN</label><select id="puan" onchange="filmleriGetir()"><option value="0">Tümü</option><option value="8">8+</option><option value="7">7+</option></select></div>
+        <div class="secim-kutusu"><label>PUAN</label><select id="puan" onchange="filmleriGetir()"><option value="0">Tümü</option><option value="8">8+ Üstü</option><option value="7">7+ Üstü</option></select></div>
         <div class="secim-kutusu"><label>SIRALAMA</label><select id="sira" onchange="filmleriGetir()"><option value="popularity.desc">Popülerlik</option><option value="vote_average.desc">Puan</option></select></div>
     </div>
 </div>
@@ -80,7 +103,7 @@
                 <div class="data-item"><b>Ülke/Dil</b><span id="m-ulke"></span></div>
                 <div class="data-item"><b>Popülerlik</b><span id="m-izlenme"></span></div>
             </div>
-            <b style="color:var(--sari); font-size:11px;">OYUNCULAR</b>
+            <b style="color:var(--sari); font-size:11px; display:block; margin-bottom:10px;">OYUNCU KADROSU</b>
             <div class="oyuncu-listesi" id="m-oyuncu-listesi"></div>
             <div class="video-kutu" id="m-video"></div>
         </div>
@@ -95,7 +118,7 @@
             <h2 id="o-isim" style="color:var(--sari); margin:0;"></h2>
             <p id="o-dogum" style="color:#888; margin-bottom:20px;"></p>
             <div id="o-metin" style="line-height:1.6; color:#ccc; font-size:14px;"></div>
-            <h3 style="border-bottom:2px solid #333; padding-bottom:10px; margin-top:30px;">Tüm Filmleri</h3>
+            <h3 style="border-bottom:2px solid #333; padding-bottom:10px; margin-top:30px;">Filmografisi (Tümü)</h3>
             <div class="o-film-grid" id="o-filmler"></div>
         </div>
     </div>
@@ -121,11 +144,9 @@
     }
 
     async function detayGetir(id) {
-        // Hem TR hem EN videoları çekiyoruz
         const res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=tr-TR&append_to_response=credits,videos,release_dates`);
         const f = await res.json();
         
-        // Eğer TR video yoksa EN video ara
         let trailer = f.videos.results.find(v => v.type === 'Trailer');
         if(!trailer) {
             const enRes = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}&language=en-US`);
@@ -135,7 +156,7 @@
 
         document.getElementById('m-poster').innerHTML = `<img src="https://image.tmdb.org/t/p/w500${f.poster_path}">`;
         document.getElementById('m-baslik').innerText = f.title;
-        document.getElementById('m-ozet').innerText = f.overview || "Özet henüz eklenmemiş.";
+        document.getElementById('m-ozet').innerText = f.overview || "Konu özeti mevcut değil.";
         
         const cert = f.release_dates.results.find(r => r.iso_3166_1 === 'TR')?.release_dates[0]?.certification || "G";
         document.getElementById('m-alt-bilgi').innerHTML = `<span>${f.release_date.split('-')[0]}</span> <span>${f.runtime} dk</span> <span class="yas-grubu">${cert}</span> <span>★ ${f.vote_average.toFixed(1)}</span>`;
@@ -144,7 +165,7 @@
         document.getElementById('m-yonetmen').innerText = crew.find(c => c.job === 'Director')?.name || "-";
         document.getElementById('m-senarist').innerText = crew.find(c => c.job === 'Screenplay' || c.job === 'Writer')?.name || "-";
         document.getElementById('m-vizyon').innerText = f.release_date;
-        document.getElementById('m-ekonomi').innerText = f.budget > 0 ? `$${(f.budget/1e6).toFixed(1)}M / $${(f.revenue/1e6).toFixed(1)}M` : "Gizli";
+        document.getElementById('m-ekonomi').innerText = f.budget > 0 ? `$${(f.budget/1e6).toFixed(1)}M / $${(f.revenue/1e6).toFixed(1)}M` : "Bilgi Yok";
         document.getElementById('m-ulke').innerText = `${f.production_countries[0]?.iso_3166_1 || ""} / ${f.original_language.toUpperCase()}`;
         document.getElementById('m-izlenme').innerText = f.popularity.toFixed(0);
 
@@ -176,7 +197,6 @@
         
         const filmGrid = document.getElementById('o-filmler');
         filmGrid.innerHTML = '';
-        // Tüm filmleri çekiyoruz ve tarihe göre sıralıyoruz
         const sortedMovies = p.movie_credits.cast.sort((a,b) => new Date(b.release_date) - new Date(a.release_date));
         
         sortedMovies.forEach(m => {
