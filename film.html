@@ -3,56 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRimdb PRO | v12.0 Diamond</title>
+    <title>TRimdb PRO | v13.0 Hyper-Data</title>
     <style>
-        :root { --sari: #f5c518; --siyah: #000; --gri: #121212; --kutu: #1c1c1c; --accent: #ff0055; }
-        body { background: var(--siyah); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; }
+        :root { --sari: #f5c518; --siyah: #000; --gri: #121212; --kutu: #1c1c1c; }
+        body { background: var(--siyah); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; }
         
         header { background: var(--gri); padding: 15px 5%; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--sari); position: sticky; top: 0; z-index: 1000; }
         .logo { font-size: 24px; font-weight: 900; background: var(--sari); color: black; padding: 5px 15px; border-radius: 5px; text-decoration: none; }
-        .live-tag { font-size: 10px; background: var(--accent); color: white; padding: 2px 8px; border-radius: 10px; animation: pulse 1.5s infinite; }
-
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
         .filtre-alani { background: #0a0a0a; padding: 20px 5%; border-bottom: 1px solid #333; }
         .filtreler { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
         
-        .secim-kutusu { background: var(--kutu); padding: 10px; border-radius: 8px; border: 1px solid #333; }
+        /* BEYAZLIK SORUNUNU ÇÖZEN KISIM */
+        .secim-kutusu { background: var(--kutu); padding: 10px; border-radius: 8px; border: 1px solid #444; }
         .secim-kutusu label { display: block; color: var(--sari); font-size: 10px; font-weight: bold; margin-bottom: 5px; }
-        .secim-kutusu select { width: 100%; background: transparent; color: white; border: none; outline: none; font-size: 14px; cursor: pointer; }
+        .secim-kutusu select { 
+            width: 100%; background: #1c1c1c !important; color: white !important; 
+            border: none; outline: none; font-size: 14px; cursor: pointer; appearance: none;
+        }
+        .secim-kutusu select option { background: #1c1c1c; color: white; }
 
         .film-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; padding: 30px 5%; }
         .film { background: var(--kutu); border-radius: 12px; overflow: hidden; border: 1px solid #222; position: relative; transition: 0.3s; cursor: pointer; }
-        .film:hover { transform: scale(1.05); border-color: var(--sari); z-index: 10; }
+        .film:hover { transform: scale(1.03); border-color: var(--sari); }
         .film img { width: 100%; height: 240px; object-fit: cover; }
         .puan-badge { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: var(--sari); padding: 3px 7px; border-radius: 5px; font-size: 12px; border: 1px solid var(--sari); font-weight: bold; }
-        .bilgi { padding: 10px; text-align: center; font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .bilgi { padding: 10px; text-align: center; font-size: 12px; font-weight: 600; }
 
-        /* MODAL GÜÇLENDİRİLDİ */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 9999; overflow-y: auto; }
-        .modal-icerik { width: 95%; max-width: 1000px; margin: 40px auto; background: #0d0d0d; border-radius: 20px; display: flex; flex-wrap: wrap; position: relative; border: 1px solid #333; overflow: hidden; }
+        /* MODAL TASARIMI */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; overflow-y: auto; }
+        .modal-icerik { width: 95%; max-width: 1000px; margin: 40px auto; background: #0d0d0d; border-radius: 20px; display: flex; flex-wrap: wrap; position: relative; border: 1px solid #333; }
         .kapat { position: absolute; top: 15px; right: 20px; color: #fff; font-size: 30px; cursor: pointer; z-index: 100; }
-        
         .detay-sol { flex: 1; min-width: 300px; }
-        .detay-sol img { width: 100%; height: 100%; object-fit: cover; }
-        
+        .detay-sol img { width: 100%; height: 100%; object-fit: cover; border-radius: 20px 0 0 20px; }
         .detay-sag { flex: 1.5; min-width: 350px; padding: 30px; }
-        .detay-sag h2 { color: var(--sari); margin: 0; font-size: 28px; }
-        .detay-meta { color: #888; margin: 10px 0; font-size: 14px; }
-        .ozet { color: #ccc; line-height: 1.6; background: #1a1a1a; padding: 15px; border-radius: 10px; margin: 20px 0; font-size: 15px; }
-        
+        .detay-sag h2 { color: var(--sari); margin: 0; }
+        .ozet { color: #ccc; line-height: 1.6; background: #161616; padding: 15px; border-radius: 10px; margin: 15px 0; border-left: 3px solid var(--sari); }
         .tablo-ozellik { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .t-item b { color: var(--sari); display: block; font-size: 11px; text-transform: uppercase; margin-bottom: 3px; }
-        .t-item span { font-size: 14px; color: #fff; }
-
-        .video-container { margin-top: 25px; border-radius: 12px; overflow: hidden; aspect-ratio: 16/9; background: #000; border: 1px solid #222; }
+        .t-item b { color: var(--sari); display: block; font-size: 11px; }
+        .video-container { margin-top: 20px; border-radius: 12px; overflow: hidden; aspect-ratio: 16/9; background: #000; border: 1px solid #333; }
     </style>
 </head>
 <body>
 
 <header>
     <a href="#" class="logo">TRimdb PRO</a>
-    <div class="live-tag">DEEP DATA ACTIVE</div>
+    <span style="color: #00ff00; font-size: 12px; font-weight: bold;">● HYPER-DATA ACTIVE</span>
 </header>
 
 <div class="filtre-alani">
@@ -62,15 +58,15 @@
             <select id="tur" onchange="filmleriGetir()">
                 <option value="">Tümü</option>
                 <option value="28">Aksiyon</option><option value="12">Macera</option><option value="16">Animasyon</option>
-                <option value="35">Komedi</option><option value="27">Korku</option><option value="878">Bilim Kurgu</option>
-                <option value="marvel">Marvel</option><option value="dc">DC</option><option value="turk">Türk</option>
+                <option value="35">Komedi</option><option value="80">Polisiye</option><option value="27">Korku</option>
+                <option value="18">Dram</option><option value="878">Bilim Kurgu</option><option value="turk">Türk Filmleri</option>
             </select>
         </div>
         <div class="secim-kutusu">
             <label>MİN PUAN</label>
             <select id="puan" onchange="filmleriGetir()">
-                <script>for(let i=9; i>=1; i--) document.write(`<option value="${i}">${i}+ Puan</option>`);</script>
-                <option value="0" selected>Tüm Puanlar</option>
+                <option value="0">Tümü</option>
+                <script>for(let i=9; i>=5; i--) document.write(`<option value="${i}">${i}+</option>`);</script>
             </select>
         </div>
         <div class="secim-kutusu">
@@ -86,6 +82,7 @@
             <select id="sira" onchange="filmleriGetir()">
                 <option value="popularity.desc">Popülerlik</option>
                 <option value="vote_average.desc">Puan</option>
+                <option value="primary_release_date.desc">Yeni</option>
             </select>
         </div>
     </div>
@@ -99,7 +96,7 @@
         <div class="detay-sol" id="m-poster"></div>
         <div class="detay-sag">
             <h2 id="m-baslik"></h2>
-            <div class="detay-meta" id="m-meta"></div>
+            <div style="color:#777; font-size:13px; margin:10px 0;" id="m-meta"></div>
             <p class="ozet" id="m-ozet"></p>
             <div class="tablo-ozellik">
                 <div class="t-item"><b>YÖNETMEN</b><span id="m-yonetmen"></span></div>
@@ -119,55 +116,47 @@
         const liste = document.getElementById('liste');
         const tur = document.getElementById('tur').value;
         const yil = document.getElementById('yil').value;
-        liste.innerHTML = '<p style="grid-column:1/-1; text-align:center;">Veriler Tazeleniyor...</p>';
+        liste.innerHTML = '<p style="grid-column:1/-1; text-align:center;">Veri Hattına Bağlanılıyor...</p>';
 
-        let p = "";
-        if(tur === "marvel") p = "&with_companies=420";
-        else if(tur === "dc") p = "&with_companies=9993";
-        else if(tur === "turk") p = "&with_original_language=tr";
-        else if(tur !== "") p = `&with_genres=${tur}`;
-
+        let tP = tur === "turk" ? "&with_original_language=tr" : (tur ? `&with_genres=${tur}` : "");
         let yP = yil === "old" ? "&primary_release_date.lte=1999-12-31" : (yil ? `&primary_release_year=${yil}` : "");
 
-        const url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=tr-TR&sort_by=${document.getElementById('sira').value}&vote_average.gte=${document.getElementById('puan').value}${p}${yP}`;
+        const url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=tr-TR&sort_by=${document.getElementById('sira').value}&vote_average.gte=${document.getElementById('puan').value}${tP}${yP}`;
 
-        const res = await fetch(url);
-        const data = await res.json();
-        liste.innerHTML = '';
-        data.results.forEach(f => {
-            if(!f.poster_path) return;
-            const item = document.createElement('div');
-            item.className = 'film';
-            item.onclick = () => detayGetir(f.id);
-            item.innerHTML = `<div class="puan-badge">★ ${f.vote_average.toFixed(1)}</div><img src="https://image.tmdb.org/t/p/w500${f.poster_path}"><div class="bilgi">${f.title}</div>`;
-            liste.appendChild(item);
-        });
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            liste.innerHTML = '';
+            data.results.forEach(f => {
+                if(!f.poster_path) return;
+                const item = document.createElement('div');
+                item.className = 'film';
+                item.onclick = () => detayGetir(f.id);
+                item.innerHTML = `<div class="puan-badge">★ ${f.vote_average.toFixed(1)}</div><img src="https://image.tmdb.org/t/p/w500${f.poster_path}"><div class="bilgi">${f.title}</div>`;
+                liste.appendChild(item);
+            });
+        } catch (e) { console.log(e); }
     }
 
     async function detayGetir(id) {
-        // "credits" ve "videos" aynı anda çekiliyor ki veri eksik kalmasın
         const res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=tr-TR&append_to_response=credits,videos`);
         const f = await res.json();
         
         document.getElementById('m-poster').innerHTML = `<img src="https://image.tmdb.org/t/p/w500${f.poster_path}">`;
         document.getElementById('m-baslik').innerText = f.title;
-        document.getElementById('m-meta').innerText = `${f.release_date} | ${f.runtime} dk | ★ ${f.vote_average}`;
-        document.getElementById('m-ozet').innerText = f.overview || "Özet henüz eklenmemiş.";
+        document.getElementById('m-meta').innerText = `${f.release_date} | ${f.runtime} Dakika | ★ ${f.vote_average.toFixed(1)}`;
+        document.getElementById('m-ozet').innerText = f.overview || "Bu film için geniş özet veri tabanında bulunmuyor.";
         
-        // Yönetmen Bulma (En çok unutulan buydu)
-        const director = f.credits.crew.find(person => person.job === 'Director');
-        document.getElementById('m-yonetmen').innerText = director ? director.name : "Bilinmiyor";
-        
-        // Oyuncular
-        document.getElementById('m-oyuncular').innerText = f.credits.cast.slice(0,4).map(a => a.name).join(', ');
-        
-        // Bütçe & Hasılat Formatlama
-        document.getElementById('m-butce').innerText = f.budget > 0 ? "$" + f.budget.toLocaleString() : "Gizli";
-        document.getElementById('m-hasilat').innerText = f.revenue > 0 ? "$" + f.revenue.toLocaleString() : "Bilgi Yok";
+        const director = f.credits.crew.find(x => x.job === 'Director');
+        document.getElementById('m-yonetmen').innerText = director ? director.name : "Veri Yok";
+        document.getElementById('m-oyuncular').innerText = f.credits.cast.slice(0,3).map(a => a.name).join(', ') || "Veri Yok";
+        document.getElementById('m-butce').innerText = f.budget > 1000 ? "$" + f.budget.toLocaleString() : "Belirtilmemiş";
+        document.getElementById('m-hasilat').innerText = f.revenue > 1000 ? "$" + f.revenue.toLocaleString() : "Belirtilmemiş";
 
-        // Fragman Algoritması (Daha esnek)
         const video = f.videos.results.find(v => v.type === 'Trailer') || f.videos.results[0];
-        document.getElementById('m-video').innerHTML = video ? `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${video.key}" frameborder="0" allowfullscreen></iframe>` : "<p style='padding:20px; text-align:center;'>Fragman Bulunamadı</p>";
+        document.getElementById('m-video').innerHTML = video ? 
+            `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${video.key}" frameborder="0" allowfullscreen></iframe>` : 
+            `<div style="height:100%; display:flex; align-items:center; justify-content:center; background:#111; color:#444;">Fragman Yayında Değil</div>`;
 
         document.getElementById('filmModal').style.display = 'block';
         document.body.style.overflow = 'hidden';
